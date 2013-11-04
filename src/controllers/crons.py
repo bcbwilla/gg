@@ -22,8 +22,7 @@ class GetMatchesHandler(webapp2.RequestHandler):
 
     def get(self):
         print "getting matches"
-        # scraper.scrape_matches(150)
-        scraper.scrape_matches(4)
+        scraper.scrape_matches(150)
 
 
 
