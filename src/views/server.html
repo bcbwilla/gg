@@ -40,7 +40,7 @@
                 </tr>
                 {% if server.avg_kills != None %}
                 <tr>    
-                  <td>Avg. Rot. Length</td>
+                  <td><abbr title="In minutes">Avg. Rot. Length</abbr></td>
                   {% set arl = server.avg_rotation_length / 60 %}
                   <td>{{ arl | round(2) }}</td>
                 </tr>
