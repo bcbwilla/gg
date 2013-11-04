@@ -38,9 +38,16 @@
                   <td>Maps</td>
                   <td>{{ server.n_maps }}</td>
                 </tr>
+                {% if server.avg_kills != None %}
+                <tr>    
+                  <td>Avg. Rot. Length</td>
+                  {% set arl = server.avg_rotation_length / 60 %}
+                  <td>{{ arl | round(2) }}</td>
+                </tr>
+                {% endif %}
                 <tr>
                   <td>Last Updated</td>
-                  <td>{{ server.updated_date }}</td>
+                  <td>{{ server.updated_date.strftime("%b %d %Y, %H:%M") }}</td>
                 </tr>
               </tbody>
             </table>
@@ -53,6 +60,10 @@
           <div class="col-md-8 col-md-offset-2">
     
            {% if server.avg_kills != None %}
+
+            {% if server.n_maps < 5 %}
+             <div class="alert alert-info">There are currently only {{ server.n_maps }} maps being used to compute these statistics.  They are probably not representative of the actual values.  The values will be more reliable when more maps are added.</div>
+            {% endif %}
 
             <table class="table table-condensed table-hover">
               <thead>
@@ -83,10 +94,13 @@
                   <td>{{ server.std_participants | round(2) }}</td>
                 </tr>
                 <tr>
-                  <td>Length (minutes)</td>
-                  <td>{{ server.avg_length | round(2) }}</td>
-                  <td>{{ server.med_length | round(2) }}</td>
-                  <td>{{ server.std_length | round(2) }}</td>
+                  <td><abbr title="In minutes">Match Length</abbr></td>
+                  {% set avg = server.avg_length / 60 %}
+                  {% set med = server.med_length / 60 %}
+                  {% set std = server.std_length / 60 %}
+                  <td>{{ avg | round(2) }}</td>
+                  <td>{{ med | round(2) }}</td>
+                  <td>{{ std | round(2) }}</td>
                 </tr>
               </tbody>
             </table>
