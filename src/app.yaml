@@ -7,7 +7,7 @@ threadsafe: yes
 handlers:
 - url: /assets
   static_dir: assets
-- url: /crons/getmatches
+- url: /crons/.*
   script: main.app
   login: admin
 - url: /.*
