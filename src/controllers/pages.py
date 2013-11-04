@@ -21,31 +21,16 @@ class MapPage(webapp2.RequestHandler):
 
         if map_name: 
             mapp = Map.get_by_id(map_name.lower())
+
+            if json_rep == "true":
+                self.response.headers['Content-Type'] = 'text/plain'
+                self.response.write(mapp.to_json())
+            else:
+                self.render_page(mapp)
+
         else:
-            self.redirect('/')
-
-        if json_rep == "true":
-            self.response.headers['Content-Type'] = 'text/plain'
-            self.response.write(mapp.to_json())
-        else:
-            self.render_page(mapp)
-
-    def to_json(self, m):
-        m_attributes = (name for name in dir(m) if not name.startswith('_'))
-       
-        md = {} # dictionary rep. of map
-
-        print md
+            self.redirect('/maps')
         
-        # need to convert update date to string
-        md['updated_date'] = m.updated_date.isoformat()
-        
-        # frequency is behaving strangly?
-        #md['frequency'] = m.frequency
-
-        #return json.dumps(md)
-        
-    
     def render_page(self, mapp, json_rep=False):
         template_values = {
             'page_title': "Map: " + mapp.name,
@@ -63,15 +48,17 @@ class ServerPage(webapp2.RequestHandler):
 
         if server_name:
             server = Server.get_by_id(server_name.lower())
+
+            if json_rep == "true":
+                self.response.headers['Content-Type'] = 'text/plain'
+                self.response.write(server.to_json())
+            else:
+                self.render_page(server)
+
         else:
-            self.redirect('/')
+            self.redirect('/servers')
         
-        if json_rep == "true":
-            self.response.headers['Content-Type'] = 'text/plain'
-            self.response.write(server.to_json())
-        else:
-            self.render_page(server)
-    
+
     def render_page(self, server):
         template_values = {
             'page_title': "Server: " + server.name,
