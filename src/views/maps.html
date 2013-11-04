@@ -7,13 +7,13 @@
         <br><br><br>
     
         <div class="row">
-          <div class="col-md-8 col-md-offset-2">
+          <div class="col-md-6 col-md-offset-3">
 
-            <table class="table table-condensed table-hover">
+            <table class="table table-condensed table-hover table-bordered">
               <thead>
                 <tr>
                   <th><a href="/maps?sort=name">Map</a></th>
-                  <th><abbr title="Support coming soon!">Game Mode<abbr></th>
+      <!--            <th><abbr title="Support coming soon!">Game Mode<abbr></th> -->
                   <th><a href="/maps?sort=avg_kills">Avg. Kills</a></th>
                   <th><a href="/maps?sort=avg_deaths">Avg. Deaths</a></th>
                   <th><abbr title="In minutes"><a href="/maps?sort=avg_length">Avg. Length</a></abbr></th>
@@ -23,7 +23,7 @@
                 {% for m in maps %}
                 <tr>
                   <td><a href="/map?n={{m.name}}">{{ m.name }}</a></td>
-                  <td> </td>
+       <!--           <td> </td> -->
                   {% if m.avg_kills != None %}
                   <td>{{ m.avg_kills | round(2) }}</td>
                   <td>{{ m.med_deaths | round(2) }}</td>
