@@ -1,0 +1,5 @@
+*.pyc
+/src/assets
+/src/bs4
+*.js
+*.css

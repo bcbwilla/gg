@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    {% include 'header.html' %}
+
+    <div class="container">
+        <br><br><br>
+    
+        <div class="row">
+          <div class="col-md-4 col-md-offset-2">
+            <h1>{{ mapp.name }}</h1>
+          </div> <!-- /.col -->
+          <div class="col-md-4">
+
+            <table class="table table-condensed table-hover">
+              <thead>
+                <tr>
+                  <th colspan="2">Basic Information</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><abbr title="Number of matches stored in database that are used to compute statistics">Matches</abbr></td>
+                  <td>{{ mapp.n_matches }}</td>
+                </tr>
+                <tr>
+                  <td>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                      Servers <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                    {% for server in mapp.servers %}
+                      <li><a href="/server?n={{server}}">{{ server }}</a></li>
+                    {% endfor %}
+                    </ul>
+                  </div>
+                  </td>
+                  <td>{{ mapp.servers | length }}</td>
+                </tr>
+                <tr>
+                  <td><abbr title="Percentage of maps on all servers that are {{ mapp.name }}">Percentage of Maps</abbr></td>
+                  {% if mapp.percent_maps %}
+                    {% set per = mapp.percent_maps * 100 %}
+                    <td>{{ per | round(2) }}%</td>
+                  {% else %}
+                    <td></td>
+                  {% endif %}
+                </tr>
+                <tr>
+                  <td>On US</td>
+                  <td>{{ mapp.is_on_US }}</td>
+                </tr>
+                <tr>
+                  <td>On EU</td>
+                  <td>{{ mapp.is_on_EU }}</td>
+                </tr>
+                <tr>
+                  <td>Last Updated</td>
+                  <td>{{ mapp.updated_date }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div> <!-- /.col -->
+        </div> <!-- /.row -->  
+
+        <br><br>
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2">
+
+            {% if mapp.avg_kills != None %}
+            <table class="table table-condensed table-hover">
+              <thead>
+                <tr>
+                  <th>Statistic</th>
+                  <th>Average</th>
+                  <th>Median</th>
+                  <th>Std. Dev.</th>
+                  <th><abbr title="Most likely not the record">Min</abbr></th>
+                  <th><abbr title="Most likely not the record">Max</abbr></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Kills</td>
+                  <td>{{ mapp.avg_kills | round(2) }}</td>
+                  <td>{{ mapp.med_kills | round(2) }}</td>
+                  <td>{{ mapp.std_kills | round(2) }}</td>
+                  <td>{{ mapp.min_kills }}</td>
+                  <td>{{ mapp.max_kills }}</td>
+                </tr>
+                <tr>
+                  <td>Deaths</td>
+                  <td>{{ mapp.avg_deaths | round(2) }}</td>
+                  <td>{{ mapp.med_deaths | round(2) }}</td>
+                  <td>{{ mapp.std_deaths | round(2) }}</td>
+                  <td>{{ mapp.min_deaths }}</td>
+                  <td>{{ mapp.max_deaths }}</td>
+                </tr>
+                <tr>
+                  <td>Participants</td>
+                  <td>{{ mapp.avg_participants | round(2) }}</td>
+                  <td>{{ mapp.med_participants | round(2) }}</td>
+                  <td>{{ mapp.std_participants | round(2) }}</td>
+                  <td>{{ mapp.min_participants }}</td>
+                  <td>{{ mapp.max_participants }}</td>
+                </tr>
+                <tr>
+                  <td><abbr title="In minutes">Length</abbr></td>
+                      {% set avg = mapp.avg_length / 60.0 %}
+                      {% set med = mapp.med_length / 60.0 %}
+                      {% set std = mapp.std_length / 60.0 %}
+                      {% set minl = mapp.min_length / 60.0 %}
+                      {% set maxl = mapp.max_length / 60.0 %}
+                  <td>{{ avg | round(2) }}</td>
+                  <td>{{ med | round(2) }}</td>
+                  <td>{{ std | round(2) }}</td>
+                  <td>{{ minl | round(2) }}</td>
+                  <td>{{ maxl | round(2) }}</td>
+                </tr>
+              </tbody>
+            </table>
+            {% else %}
+             <div class="alert alert-info">Currently not enough data to compute other statistics.</div>
+            {% endif %}
+            
+          </div>  <!-- /.col -->
+        </div> <!-- /.row -->
+
+
+
+	{% include 'footer.html' %}
+
+  </body>
+</html>

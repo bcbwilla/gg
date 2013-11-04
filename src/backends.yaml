@@ -1,0 +1,5 @@
+backends:
+- name: updatemaps
+  instances: 1
+  class: B4_1G
+  options: dynamic

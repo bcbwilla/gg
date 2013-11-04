@@ -1,0 +1,38 @@
+<!-- Modal -->
+  <div class="modal fade" id="about" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">About</h4>
+        </div>
+        <div class="modal-body">
+          <p>GG collects and analyzes Minecraft PvP minigame match data from <a href="http://www.oc.tc">Overcast Network</a>.</p>
+          <strong>Data Collection</strong>
+          <p>
+            GG does not analyze every match - it only collects enough matches to produce meaningful statistics about maps and servers.
+            (In other words, the minimum match length for a given match is almost definitely not the official "rush" record.)
+          </p>
+          <p>
+            Each day, a bunch of matches are added and the stats are all updated.
+            Matches will probably be collected in a rolling fashion (e.g. after a couple weeks, the oldest matches in the database will be
+            overwritten by new ones), but I need to play around with that a bit first.
+          </p>
+          <p>There are many more cool features to come, stay tuned!</p>
+        
+          <strong>Technical Bits</strong>  
+          <p>
+            This runs on <a href="https://developers.google.com/appengine/">Google's App Engine</a> and is written in 
+            <a href="http://www.python.org/">Python</a> and <a href="http://jinja.pocoo.org/docs/">jinja2</a>, with 
+            <a href="http://getbootstrap.com/">Bootstrap</a> css/js.
+            <a href="http://www.crummy.com/software/BeautifulSoup/">Beautiful Soup</a> is used to collect match information.
+            <a href="http://www.github.com/bcbwilla">Source.</a>
+          </p>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->

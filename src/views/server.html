@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    {% include 'header.html' %}
+
+    <div class="container">
+        <br><br><br>
+    
+        <div class="row">
+          <div class="col-md-4 col-md-offset-2">
+            <h1>{{ server.name }}</h1>
+          </div> <!-- /.col -->
+          <div class="col-md-4">
+
+            <table class="table table-condensed table-hover">
+              <thead>
+                <tr>
+                  <th colspan="2">Basic Information</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                      Maps <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                    {% for mapp in server.maps %}
+                      <li><a href="/map?n={{mapp}}">{{ mapp }}</a></li>
+                    {% endfor %}
+                    </ul>
+                  </div>
+                  </td>
+                  <td>{{ server.n_maps }}</td>
+                </tr>
+                <tr>
+                  <td>Maps</td>
+                  <td>{{ server.n_maps }}</td>
+                </tr>
+                <tr>
+                  <td>Last Updated</td>
+                  <td>{{ server.updated_date }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div> <!-- /.col -->
+        </div> <!-- /.row -->  
+
+        <br><br>
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2">
+    
+           {% if server.avg_kills != None %}
+
+            <table class="table table-condensed table-hover">
+              <thead>
+                <tr>
+                  <th>Statistic</th>
+                  <th>Average</th>
+                  <th>Median</th>
+                  <th>Std. Dev.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Kills</td>
+                  <td>{{ server.avg_kills | round(2) }}</td>
+                  <td>{{ server.med_kills | round(2) }}</td>
+                  <td>{{ server.std_kills | round(2) }}</td>
+                </tr>
+                <tr>
+                  <td>Deaths</td>
+                  <td>{{ server.avg_deaths | round(2) }}</td>
+                  <td>{{ server.med_deaths | round(2) }}</td>
+                  <td>{{ server.std_deaths | round(2) }}</td>
+                </tr>
+                <tr>
+                  <td>Participants</td>
+                  <td>{{ server.avg_participants | round(2) }}</td>
+                  <td>{{ server.med_participants | round(2) }}</td>
+                  <td>{{ server.std_participants | round(2) }}</td>
+                </tr>
+                <tr>
+                  <td>Length (minutes)</td>
+                  <td>{{ server.avg_length | round(2) }}</td>
+                  <td>{{ server.med_length | round(2) }}</td>
+                  <td>{{ server.std_length | round(2) }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            {% else %}
+             <div class="alert alert-info">Currently not enough data to compute other statistics.</div>
+            {% endif %}
+
+          </div>  <!-- /.col -->
+        </div> <!-- /.row -->
+
+
+	{% include 'footer.html' %}
+
+  </body>
+</html>

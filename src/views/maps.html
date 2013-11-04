@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    {% include 'header.html' %}
+
+    <div class="container">
+        <br><br><br>
+    
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2">
+
+            <table class="table table-condensed table-hover">
+              <thead>
+                <tr>
+                  <th><a href="/maps?sort=name">Map</a></th>
+                  <th><abbr title="Support coming soon!">Game Mode<abbr></th>
+                  <th><a href="/maps?sort=avg_kills">Avg. Kills</a></th>
+                  <th><a href="/maps?sort=avg_deaths">Avg. Deaths</a></th>
+                  <th><abbr title="In minutes"><a href="/maps?sort=avg_length">Avg. Length</a></abbr></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for m in maps %}
+                <tr>
+                  <td><a href="/map?n={{m.name}}">{{ m.name }}</a></td>
+                  <td> </td>
+                  {% if m.avg_kills != None %}
+                  <td>{{ m.avg_kills | round(2) }}</td>
+                  <td>{{ m.med_deaths | round(2) }}</td>
+                  {% set l = m.avg_length / 60.0 %}
+                  <td>{{ l | round(2) }}</td>
+                  {% else %}
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+          </div>  <!-- /.col -->
+        </div> <!-- /.row -->
+
+
+
+	{% include 'footer.html' %}
+
+  </body>
+</html>
