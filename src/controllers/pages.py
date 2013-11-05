@@ -130,15 +130,15 @@ def get_data_for_table(ModelObject, sort, page):
     page = int(page)
     offset = (page-1)*PER_PAGE
 
-    if sort:
+    if sort and sort != 'name':
         try:
-            qry = ModelObject.query().order(-getattr(Map, sort))
+            qry = ModelObject.query().order(-getattr(ModelObject, sort))
         except AttributeError:
-            qry = ModelObject.query().order(Map.name)
+            qry = ModelObject.query().order(ModelObject.name)
 
     else:
         sort = 'name'
-        qry = ModelObject.query().order(Map.name)
+        qry = ModelObject.query().order(ModelObject.name)
 
     count = qry.count() // PER_PAGE + 1 # page count
     objs = qry.fetch(PER_PAGE, offset=offset)
