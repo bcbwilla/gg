@@ -17,7 +17,7 @@ class MapPage(webapp2.RequestHandler):
     
     def get(self):
         map_name = self.request.get('n')
-        json_rep = self.request.get('json') 
+        json_rep = self.request.get('json')
 
         if map_name: 
             mapp = Map.get_by_id(map_name.lower())
@@ -71,23 +71,21 @@ class MapsPage(webapp2.RequestHandler):
 
     def get(self):
         sort = self.request.get('sort')
+        page = self.request.get('page')
 
-        if sort:
-            try:
-                maps = Map.query().order(-getattr(Map, sort))
-            except AttributeError:
-                maps = Map.query().order(Map.name)
+        objs = get_data_for_table(Map, sort, page)
 
-        else:
-            maps = Map.query().order(Map.name)
-        maps = list(maps) 
-        self.render_page(maps)     
+        self.render_page(objs['objs'], objs['page'], objs['count'], objs['sort'])     
     
-    def render_page(self, maps):
+    def render_page(self, maps, page, count, sort):
         template_values = {
             'nav': 'maps',
             'page_title': "Maps",
-            'maps' : maps
+            'maps': maps,
+            'sort': sort,
+            'page': page,
+            'count': count,
+            'base_url': "/maps"
         }
         template = JINJA_ENVIRONMENT.get_template('maps.html')
         self.response.write(template.render(template_values))
@@ -95,26 +93,55 @@ class MapsPage(webapp2.RequestHandler):
 class ServersPage(webapp2.RequestHandler):
 
     def get(self):
-        sort = self.request.get('sort')
 
-        if sort == "name":
-            servers = Server.query().order(Server.name)
-        elif sort:
-            try:
-                servers = Server.query().order(-getattr(Server, sort))
-            except AttributeError:
-                servers = Server.query().order(Server.name)
-        else:
-            servers = Server.query().order(Server.name)
-        servers = list(servers) 
-        self.render_page(servers)     
+        sort = self.request.get('sort')
+        page = self.request.get('page')
+
+        objs = get_data_for_table(Server, sort, page)
+
+        self.render_page(objs['objs'], objs['page'], objs['count'], objs['sort'])   
     
-    def render_page(self, servers):
+    def render_page(self, servers, page, count, sort):
         template_values = {
             'nav': 'servers',
             'page_title': "Servers",
-            'servers' : servers
+            'servers' : servers,
+            'sort': sort,
+            'page': page,
+            'count': count
         }
         template = JINJA_ENVIRONMENT.get_template('servers.html')
         self.response.write(template.render(template_values))
+
+def get_data_for_table(ModelObject, sort, page):
+    """ Queries ndb for PER_PAGE instances
+        of ModelObject, sorted by sort.
+
+        For use with /maps and /servers, etc.
+    
+        Returns dictionary for appending to
+        template_values.
+    """
+
+    PER_PAGE = 15 # number of table entries per page
+
+    if not page or page < 1:
+        page = 1
+    page = int(page)
+    offset = (page-1)*PER_PAGE
+
+    if sort:
+        try:
+            qry = ModelObject.query().order(-getattr(Map, sort))
+        except AttributeError:
+            qry = ModelObject.query().order(Map.name)
+
+    else:
+        sort = 'name'
+        qry = ModelObject.query().order(Map.name)
+
+    count = qry.count() // PER_PAGE + 1 # page count
+    objs = qry.fetch(PER_PAGE, offset=offset)
+
+    return {'objs': objs, 'count': count, 'page': page, 'sort': sort} 
 
