@@ -9,6 +9,11 @@
         <div class="row">
           <div class="col-md-6 col-md-offset-3">
 
+            <div class="alert alert-info alert-dismissable">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+              <strong>Tip:</strong> Click the name of a map to see even more info!
+            </div>             
+        
             <table class="table table-condensed table-hover table-bordered">
               <thead>
                 <tr>
@@ -41,12 +46,11 @@
               </tbody>
             </table>
             
-            {% include 'pager.html' %}            
+            {% include 'pager.html' %}      
+
 
           </div>  <!-- /.col -->
         </div> <!-- /.row -->
-
-
 
 
 	{% include 'footer.html' %}
