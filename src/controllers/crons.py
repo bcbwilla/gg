@@ -109,13 +109,11 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
                     mm.name = map_maker
                     mm.put()
                     
-
             m.put()
-
-    
 
 
     def get_map_xml_data(self, mapp):
+        """ Get more map information from map XML page """
 
         BASE_URL = "https://maps.oc.tc/"
         URL_SUFFIX = "/map.xml"
@@ -239,6 +237,7 @@ class UpdateMapMakersHandler(webapp2.RequestHandler):
             deaths = []
             participants = []
             servers = []
+            maps = []
 
             for mapp in maps:
                 if mm.name in mapp.authors:
