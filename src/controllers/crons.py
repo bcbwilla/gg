@@ -100,7 +100,10 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
                 m.percent_maps = len(servers) / float(total_maps)
 
             if not m.authors:
-                m = self.get_map_xml_data(m)
+                d = self.get_map_xml_data(m)
+                m.authors = d['authors']
+                m.objective = d['objective']
+                m.team_size = d['team_size']
 
             if m.authors:
                 for map_maker in m.authors:
@@ -118,6 +121,8 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
         BASE_URL = "https://maps.oc.tc/"
         URL_SUFFIX = "/map.xml"
 
+        page_get = True
+
         # check if Ghost Squadron map
         if mapp.name[:3].lower() == "gs:":
             url = BASE_URL + "/GS/" + mapp.name[4:] + URL_SUFFIX
@@ -127,30 +132,30 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
         try:
             page = urlfetch.fetch(url,validate_certificate=False,
                                     headers = {'User-Agent': 'Mozilla/5.0'})
-        except urlfetch_errors.InvalidURLError:    
-            print "url error for map " + mapp.name            
-            return
+        except Exception:    
+            print "url error for map " + mapp.name       
+            page_get = False    
 
-        if page.status_code == 200:
+        if page_get and page.status_code == 200:
             xml = page.content
             soup =  BeautifulSoup(xml)
 
-            mapp.objective = soup.find("objective").contents[0]
+            objective = soup.find("objective").contents[0]
 
             authors = []
             for author in soup.find_all("author"):
                 authors.append(author.contents[0])
 
-            mapp.authors = authors
+            authors = authors
 
-            mapp.team_size = int(soup.find_all("team")[0]['max'])
+            team_size = int(soup.find_all("team")[0]['max'])
 
         else:
-            mapp.objective = None
-            mapp.authors = []
-            mapp.team_size = None
+            objective = None
+            authors = []
+            team_size = None
 
-        return mapp
+        return {'objective':objective,'authors':authors,'team_size':team_size}
 
 
 class UpdateServerStatsHandler(webapp2.RequestHandler):
