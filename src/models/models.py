@@ -2,7 +2,7 @@
 """
 
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from google.appengine.ext import ndb
 
@@ -32,6 +32,22 @@ class Map(ndb.Model):
     std_length = ndb.FloatProperty()
     min_length = ndb.IntegerProperty()
     max_length = ndb.IntegerProperty()
+
+    # times in hh:mm:ss string format for displaying on pages    
+    avg_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.avg_length))) if self.avg_length != None else None)
+
+    med_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.med_length))) if self.med_length != None else None)
+
+    std_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.std_length))) if self.std_length != None else None)
+
+    min_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.min_length))) if self.min_length != None else None)
+
+    max_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.max_length))) if self.max_length != None else None)
 
     avg_kills = ndb.FloatProperty()
     med_kills = ndb.FloatProperty()
@@ -136,7 +152,20 @@ class Server(ndb.Model):
     med_length = ndb.FloatProperty()
     std_length = ndb.FloatProperty()
 
+    # times in hh:mm:ss string format for displaying on pages    
+    avg_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.avg_length))) if self.avg_length != None else None)
+
+    med_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.med_length))) if self.med_length != None else None)
+
+    std_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.std_length))) if self.std_length != None else None)
+
     avg_rotation_length = ndb.FloatProperty()
+
+    avg_rotation_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.avg_rotation_length))) if self.avg_rotation_length != None else None)
 
     avg_kills = ndb.FloatProperty()
     med_kills = ndb.FloatProperty()
@@ -201,6 +230,23 @@ class GameMode(ndb.Model):
     min_length = ndb.IntegerProperty()
     max_length = ndb.IntegerProperty()
 
+    # times in hh:mm:ss string format for displaying on pages    
+    avg_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.avg_length))) if self.avg_length != None else None)
+
+    med_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.med_length))) if self.med_length != None else None)
+
+    std_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.std_length))) if self.std_length != None else None)
+
+    min_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.min_length))) if self.min_length != None else None)
+
+    max_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.max_length))) if self.max_length != None else None)
+
+
     avg_kills = ndb.FloatProperty()
     med_kills = ndb.FloatProperty()
     std_kills = ndb.FloatProperty()
@@ -231,6 +277,16 @@ class MapMaker(ndb.Model):
     avg_length = ndb.FloatProperty()
     med_length = ndb.FloatProperty()
     std_length = ndb.FloatProperty()
+
+    # times in hh:mm:ss string format for displaying on pages    
+    avg_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.avg_length))) if self.avg_length != None else None)
+
+    med_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.med_length))) if self.med_length != None else None)
+
+    std_length_s = ndb.ComputedProperty(lambda self: 
+                                        str(timedelta(seconds=int(self.std_length))) if self.std_length != None else None)
 
     avg_kills = ndb.FloatProperty()
     med_kills = ndb.FloatProperty()

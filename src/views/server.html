@@ -41,8 +41,7 @@
                 {% if server.avg_kills != None %}
                 <tr>    
                   <td><abbr title="In minutes">Avg. Rot. Length</abbr></td>
-                  {% set arl = server.avg_rotation_length / 60 %}
-                  <td>{{ arl | round(2) }}</td>
+                  <td>{{ server.avg_rotation_length_s }}</td>
                 </tr>
                 {% endif %}
                 <tr>
@@ -98,12 +97,9 @@
                 </tr>
                 <tr>
                   <td><abbr title="In minutes">Match Length</abbr></td>
-                  {% set avg = server.avg_length / 60 %}
-                  {% set med = server.med_length / 60 %}
-                  {% set std = server.std_length / 60 %}
-                  <td>{{ avg | round(2) }}</td>
-                  <td>{{ med | round(2) }}</td>
-                  <td>{{ std | round(2) }}</td>
+                  <td>{{ server.avg_length_s }}</td>
+                  <td>{{ server.med_length_s }}</td>
+                  <td>{{ server.std_length_s }}</td>
                 </tr>
               </tbody>
             </table>

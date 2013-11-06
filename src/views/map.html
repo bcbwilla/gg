@@ -114,17 +114,12 @@
                   <td>{{ mapp.max_participants }}</td>
                 </tr>
                 <tr>
-                  <td><abbr title="In minutes">Length</abbr></td>
-                      {% set avg = mapp.avg_length / 60.0 %}
-                      {% set med = mapp.med_length / 60.0 %}
-                      {% set std = mapp.std_length / 60.0 %}
-                      {% set minl = mapp.min_length / 60.0 %}
-                      {% set maxl = mapp.max_length / 60.0 %}
-                  <td>{{ avg | round(2) }}</td>
-                  <td>{{ med | round(2) }}</td>
-                  <td>{{ std | round(2) }}</td>
-                  <td>{{ minl | round(2) }}</td>
-                  <td>{{ maxl | round(2) }}</td>
+                  <td>Length</td>
+                  <td>{{ mapp.avg_length_s }}</td>
+                  <td>{{ mapp.med_length_s }}</td>
+                  <td>{{ mapp.std_length_s }}</td>
+                  <td>{{ mapp.min_length_s }}</td>
+                  <td>{{ mapp.max_length_s }}</td>
                 </tr>
               </tbody>
             </table>

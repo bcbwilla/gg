@@ -80,13 +80,10 @@
                   <td>{{ mm.std_participants | round(2) }}</td>
                 </tr>
                 <tr>
-                  <td><abbr title="In minutes">Length</abbr></td>
-                      {% set avg = mm.avg_length / 60.0 %}
-                      {% set med = mm.med_length / 60.0 %}
-                      {% set std = mm.std_length / 60.0 %}
-                  <td>{{ avg | round(2) }}</td>
-                  <td>{{ med | round(2) }}</td>
-                  <td>{{ std | round(2) }}</td>
+                  <td>Length</td>
+                  <td>{{ mm.avg_length_s }}</td>
+                  <td>{{ mm.med_length_s }}</td>
+                  <td>{{ mm.std_length_s }}</td>
                 </tr>
               </tbody>
             </table>

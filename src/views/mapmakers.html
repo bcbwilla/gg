@@ -33,8 +33,7 @@
                   {% if mm.avg_kills != None %}
                   <td>{{ mm.avg_kills | round(2) }}</td>
                   <td>{{ mm.avg_deaths | round(2) }}</td>
-                  {% set l = mm.avg_length / 60.0 %}
-                  <td>{{ l | round(2) }}</td>
+                  <td>{{ mm.avg_length_s }}</td>
                   {% else %}
                   <td></td>
                   <td></td>
