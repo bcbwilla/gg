@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    {% include 'header.html' %}
+
+    <div class="container">
+        <br><br><br>
+    
+        <div class="row">
+          <div class="col-md-6 col-md-offset-3">
+
+            <div class="alert alert-info alert-dismissable">
+              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+              <strong>Tip:</strong> Click the name of a map author to see even more info!
+            </div>             
+        
+            <table class="table table-condensed table-hover table-bordered">
+              <thead>
+                <tr>
+                  <th><a href="{{ base_url }}?sort=name">Author</a></th>
+      <!--            <th><abbr title="Support coming soon!">Game Mode<abbr></th> -->
+                  <th><a href="{{ base_url }}?sort=avg_kills">Avg. Kills</a></th>
+                  <th><a href="{{ base_url }}?sort=avg_deaths">Avg. Deaths</a></th>
+                  <th><abbr title="In minutes"><a href="/maps?sort=avg_length">Avg. Length</a></abbr></th>
+                  <th><a href="{{ base_url }}?sort=n_maps">Maps</a></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for mm in mms %}
+                <tr>
+                  <td><a href="/mapmaker?n={{mm.name}}">{{ mm.name }}</a></td>
+       <!--           <td> </td> -->
+                  {% if mm.avg_kills != None %}
+                  <td>{{ mm.avg_kills | round(2) }}</td>
+                  <td>{{ mm.avg_deaths | round(2) }}</td>
+                  {% set l = mm.avg_length / 60.0 %}
+                  <td>{{ l | round(2) }}</td>
+                  {% else %}
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  {% endif %}
+                  <td>{{ mm.n_maps }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            
+            {% include 'pager.html' %}      
+
+
+          </div>  <!-- /.col -->
+        </div> <!-- /.row -->
+
+
+	{% include 'footer.html' %}
+
+  </body>
+</html>

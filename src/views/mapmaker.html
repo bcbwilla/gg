@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    {% include 'header.html' %}
+
+    <div class="container">
+        <br><br><br>
+    
+        <div class="row">
+          <div class="col-md-4 col-md-offset-2">
+            <h1><a href="http://www.oc.tc/users/{{mm.name}}">{{ mm.name }}</a></h1>
+          </div> <!-- /.col -->
+          <div class="col-md-4">
+
+            <table class="table table-condensed table-hover">
+              <thead>
+                <tr>
+                  <th colspan="2">Basic Information</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                      Servers <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                    {% for map in mm.maps %}
+                      <li><a href="/map?n={{map}}">{{ map }}</a></li>
+                    {% endfor %}
+                    </ul>
+                  </div>
+                  </td>
+                  <td>{{ mm.n_maps }}</td>
+                </tr>
+                <tr>
+                  <td>Last Updated</td>
+                  <td>{{ mm.updated_date.strftime("%b %d %Y, %H:%M") }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div> <!-- /.col -->
+        </div> <!-- /.row -->  
+
+        <br><br>
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2">
+
+            {% if mm.avg_kills != None %}
+            <table class="table table-condensed table-hover table-bordered">
+              <thead>
+                <tr>
+                  <th>Statistic</th>
+                  <th>Average</th>
+                  <th>Median</th>
+                  <th>Std. Dev.</th>
+                  <th><abbr title="Most likely not the record">Min</abbr></th>
+                  <th><abbr title="Most likely not the record">Max</abbr></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Kills</td>
+                  <td>{{ mm.avg_kills | round(2) }}</td>
+                  <td>{{ mm.med_kills | round(2) }}</td>
+                  <td>{{ mm.std_kills | round(2) }}</td>
+                </tr>
+                <tr>
+                  <td>Deaths</td>
+                  <td>{{ mm.avg_deaths | round(2) }}</td>
+                  <td>{{ mm.med_deaths | round(2) }}</td>
+                  <td>{{ mm.std_deaths | round(2) }}</td>
+                </tr>
+                <tr>
+                  <td>Participants</td>
+                  <td>{{ mm.avg_participants | round(2) }}</td>
+                  <td>{{ mm.med_participants | round(2) }}</td>
+                  <td>{{ mm.std_participants | round(2) }}</td>
+                </tr>
+                <tr>
+                  <td><abbr title="In minutes">Length</abbr></td>
+                      {% set avg = mm.avg_length / 60.0 %}
+                      {% set med = mm.med_length / 60.0 %}
+                      {% set std = mm.std_length / 60.0 %}
+                  <td>{{ avg | round(2) }}</td>
+                  <td>{{ med | round(2) }}</td>
+                  <td>{{ std | round(2) }}</td>
+                </tr>
+              </tbody>
+            </table>
+            {% else %}
+             <div class="alert alert-warning">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                Currently not enough data to compute other statistics.
+            </div>
+            {% endif %}
+            
+          </div>  <!-- /.col -->
+        </div> <!-- /.row -->
+
+
+
+	{% include 'footer.html' %}
+
+  </body>
+</html>

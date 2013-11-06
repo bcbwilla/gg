@@ -2,13 +2,12 @@ import urllib2
 import time
 from datetime import timedelta
 
-from models.models import Match, Map, Server
-
 from bs4 import BeautifulSoup
 from google.appengine.api import urlfetch
 
+from models.models import Match, Map, Server
 
-# function that does stuff
+
 def scrape_matches(last_page=2):
     """ gets match statistics from oc.tc/matches pages
     

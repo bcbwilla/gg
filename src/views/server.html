@@ -62,7 +62,10 @@
            {% if server.avg_kills != None %}
 
             {% if server.n_maps < 5 %}
-             <div class="alert alert-info">There are currently only {{ server.n_maps }} maps being used to compute these statistics.  The values will be more reliable when more maps are added.</div>
+             <div class="alert alert-dismissable alert-warning">
+               <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+               There are currently only {{ server.n_maps }} maps being used to compute these statistics.  The values will be more reliable when more maps are added.
+            </div>
             {% endif %}
 
             <table class="table table-condensed table-hover">
@@ -106,7 +109,10 @@
             </table>
 
             {% else %}
-             <div class="alert alert-info">Currently not enough data to compute other statistics.</div>
+             <div class="alert alert-dismissable alert-warning">
+               <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+               Currently not enough data to compute other statistics.
+            </div>
             {% endif %}
 
           </div>  <!-- /.col -->

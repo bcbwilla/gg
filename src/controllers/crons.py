@@ -1,8 +1,14 @@
+""" Cron jobs that are run as specified in cron.yaml
+"""
+
 import numpy as np
 import webapp2
 
+from bs4 import BeautifulSoup
+from google.appengine.api import urlfetch, urlfetch_errors
+
 import scraper
-from models.models import Match, Map, Server, OCN
+from models.models import Match, Map, Server, OCN, MapMaker
 
 class GetMatchesHandler(webapp2.RequestHandler):
     """ Gets matches from oc.tc/matches and store in ndb """
@@ -93,7 +99,60 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
             if total_maps != 0:
                 m.percent_maps = len(servers) / float(total_maps)
 
+            if not m.authors:
+                m = self.get_map_xml_data(m)
+
+            if m.authors:
+                for map_maker in m.authors:
+                    mm = MapMaker.get_or_insert(map_maker.lower())
+                    mm.maps.append(m.name)
+                    mm.name = map_maker
+                    mm.put()
+                    
+
             m.put()
+
+    
+
+
+    def get_map_xml_data(self, mapp):
+
+        BASE_URL = "https://maps.oc.tc/"
+        URL_SUFFIX = "/map.xml"
+
+        # check if Ghost Squadron map
+        if mapp.name[:3].lower() == "gs:":
+            url = BASE_URL + "/GS/" + mapp.name[4:] + URL_SUFFIX
+        else:
+            url = BASE_URL + mapp.name + URL_SUFFIX    
+        
+        try:
+            page = urlfetch.fetch(url,validate_certificate=False,
+                                    headers = {'User-Agent': 'Mozilla/5.0'})
+        except urlfetch_errors.InvalidURLError:    
+            print "url error for map " + mapp.name            
+            return
+
+        if page.status_code == 200:
+            xml = page.content
+            soup =  BeautifulSoup(xml)
+
+            mapp.objective = soup.find("objective").contents[0]
+
+            authors = []
+            for author in soup.find_all("author"):
+                authors.append(author.contents[0])
+
+            mapp.authors = authors
+
+            mapp.team_size = int(soup.find_all("team")[0]['max'])
+
+        else:
+            mapp.objective = None
+            mapp.authors = []
+            mapp.team_size = None
+
+        return mapp
 
 
 class UpdateServerStatsHandler(webapp2.RequestHandler):
@@ -162,6 +221,62 @@ class UpdateServerStatsHandler(webapp2.RequestHandler):
             s.put()
         
 
+class UpdateMapMakersHandler(webapp2.RequestHandler):
+    """ Updates map maker stats """
+
+    def get(self):
+        print "updating map maker"
+
+        map_makers = MapMaker.query()
+        map_makers = list(map_makers)
+
+        maps = Map.query()
+        maps = list(maps)
+
+        for mm in map_makers:
+            lengths = []
+            kills = []
+            deaths = []
+            participants = []
+            servers = []
+
+            for mapp in maps:
+                if mm.name in mapp.authors:
+                    if not mapp.name in mm.maps:
+                        mm.maps.append(mapp.name)
+                
+                    if mapp.avg_length != None:
+                        lengths.append(mapp.avg_length)
+                        kills.append(mapp.avg_kills)
+                        deaths.append(mapp.avg_deaths)
+                        participants.append(mapp.avg_participants)
+
+            lengths = np.array(lengths)
+            kills = np.array(kills)
+            deaths = np.array(deaths)
+            participants = np.array(participants)
+
+
+            if len(lengths) > 1:
+                mm.avg_length = np.mean(lengths)
+                mm.med_length = np.median(lengths)
+                mm.std_length = np.std(lengths)
+
+                mm.avg_kills = np.mean(kills)
+                mm.med_kills = np.median(kills)
+                mm.std_kills = np.std(kills)
+                
+                mm.avg_deaths = np.mean(deaths)
+                mm.med_deaths = np.median(deaths)
+                mm.std_deaths = np.std(deaths)
+                    
+                mm.avg_participants = np.mean(participants)
+                mm.med_participants = np.median(participants)
+                mm.std_participants = np.std(participants)
+            
+            mm.put()
+
+
 class UpdateOCNStatsHandler(webapp2.RequestHandler):
     """ Updates OCN stats from servers """
 
@@ -175,3 +290,4 @@ class UpdateGameModeHandler(webapp2.RequestHandler):
     def get(self):
         # TODO
         pass
+            

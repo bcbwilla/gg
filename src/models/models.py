@@ -1,21 +1,26 @@
-"""
-datastore models
+""" Datastore model objects
 """
 
 import json
 from datetime import datetime
+
 from google.appengine.ext import ndb
 
 class Map(ndb.Model):
-    """Represents a map"""
+    """ Represents a map """
 
     name = ndb.StringProperty()
     servers = ndb.StringProperty(repeated=True)
     updated_date = ndb.DateTimeProperty(auto_now=True)
     n_matches = ndb.IntegerProperty()
     gamemode = ndb.StringProperty()
-
-    frequency = ndb.ComputedProperty(lambda self: len(self.servers))    
+    authors = ndb.StringProperty(repeated=True)
+    objective = ndb.StringProperty()
+    team_size = ndb.IntegerProperty()
+    
+    # Number of times map appears on all servers
+    frequency = ndb.ComputedProperty(lambda self: len(self.servers))
+    # Percentage of all maps that are map
     percent_maps = ndb.FloatProperty()
     
     is_on_US = ndb.BooleanProperty()
@@ -95,7 +100,7 @@ class Map(ndb.Model):
         return json.dumps(d)
 
 class Match(ndb.Model):
-    """Represents a match"""
+    """ Represents a match """
 
     date = ndb.DateTimeProperty(auto_now_add=True)
     map_name = ndb.StringProperty()
@@ -103,12 +108,13 @@ class Match(ndb.Model):
     deaths = ndb.IntegerProperty()
     kills = ndb.IntegerProperty()
     participants = ndb.IntegerProperty()
-    length = ndb.IntegerProperty() # in seconds
-    when = ndb.IntegerProperty() # in minutes
+    length = ndb.IntegerProperty() # In seconds
+    # When match took place relative to date, in minutes ago
+    when = ndb.IntegerProperty() 
 
 
 class OCN(ndb.Model):
-    """Represents the whole network"""
+    """ Represents the whole network """
 
     updated_date = ndb.DateTimeProperty(auto_now=True)
     servers = ndb.StringProperty(repeated=True)
@@ -119,7 +125,7 @@ class OCN(ndb.Model):
     time_played = ndb.IntegerProperty() # in seconds
 
 class Server(ndb.Model):
-    """Represents a server"""
+    """ Represents a server """
     
     name = ndb.StringProperty()    
     updated_date = ndb.DateTimeProperty(auto_now=True)
@@ -180,14 +186,14 @@ class Server(ndb.Model):
 
 
 class GameMode(ndb.Model):
-    """Represents a game mode"""
+    """ Represents a game mode """
     
     name = ndb.StringProperty()    
     updated_date = ndb.DateTimeProperty(auto_now=True)
     maps = ndb.StringProperty(repeated=True)
     n_maps = ndb.ComputedProperty(lambda self: len(self.maps))
     servers = ndb.StringProperty(repeated=True)
-    n_servers = ndb.ComputedProperty(lambda self: len(self.maps))
+    n_servers = ndb.ComputedProperty(lambda self: len(self.servers))
 
     avg_length = ndb.FloatProperty()
     med_length = ndb.FloatProperty()
@@ -212,4 +218,29 @@ class GameMode(ndb.Model):
     std_participants = ndb.FloatProperty()
     min_participants = ndb.IntegerProperty()
     max_participants = ndb.IntegerProperty()
+
+
+class MapMaker(ndb.Model):
+    """ Represents a map maker """
+
+    name = ndb.StringProperty()
+    maps = ndb.StringProperty(repeated=True)
+    updated_date = ndb.DateTimeProperty(auto_now=True)
+    n_maps = ndb.ComputedProperty(lambda self: len(self.maps))
+
+    avg_length = ndb.FloatProperty()
+    med_length = ndb.FloatProperty()
+    std_length = ndb.FloatProperty()
+
+    avg_kills = ndb.FloatProperty()
+    med_kills = ndb.FloatProperty()
+    std_kills = ndb.FloatProperty()
+
+    avg_deaths = ndb.FloatProperty()
+    med_deaths = ndb.FloatProperty()
+    std_deaths = ndb.FloatProperty()
+
+    avg_participants = ndb.FloatProperty()
+    med_participants = ndb.FloatProperty()
+    std_participants = ndb.FloatProperty()
     

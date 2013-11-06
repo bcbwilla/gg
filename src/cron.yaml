@@ -11,3 +11,7 @@ cron:
   url: /crons/updateservers
   schedule: every 12 hours
   target: updateservers
+- description: Update map makers
+  url: /crons/updatemapmakers
+  schedule: every 24 hours
+  target: updateservers
