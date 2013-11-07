@@ -41,6 +41,8 @@ def scrape_matches(last_page=2):
                         when = 0
                     elif "minute" in when:
                         when = int(when.split()[0])
+                    elif "hour" in when:
+                        when = int(when.split()[0])*60
                     elif "day" in when:
                         when = int(when.split()[0])*60*24
                     elif "month" in when:
