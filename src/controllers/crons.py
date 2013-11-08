@@ -1,9 +1,10 @@
 """ Cron jobs that are run as specified in cron.yaml
 """
 
-import numpy as np
 import webapp2
 import urllib2
+import logging
+import numpy as np
 
 from bs4 import BeautifulSoup
 from google.appengine.api import urlfetch, urlfetch_errors
@@ -15,8 +16,9 @@ class GetMatchesHandler(webapp2.RequestHandler):
     """ Gets matches from oc.tc/matches and store in ndb """
 
     def get(self):
-        print "getting matches"
+        logging.info("Getting matches")
         scraper.scrape_matches(4)
+        logging.info("Matches gotten")
 
 
 
@@ -24,9 +26,9 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
     """ Updates map stats from matches """
 
     def get(self):
-        print "updating stats"
+        logging.info('Updating map stats.')
+
         maps = Map.query()
-        
         maps = list(maps)
 
         # get total number of map instances on servers
@@ -113,6 +115,8 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
                     mm.put()
                     
             m.put()
+           
+        logging.info('Map stats updated.')
 
     def get_map_xml_data(self, m):
         """ Get more map information from map XML page 
@@ -131,22 +135,19 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
         # check if Ghost Squadron map
         if m.name[:3].lower() == "gs:":
             url = BASE_URL + "/GS/" + m.name[4:] + URL_SUFFIX
-            print "   is ghost squadron, url: " + url
         else:
-            url = BASE_URL + m.name + URL_SUFFIX  
-            print "   is not ghost squadron, url: " + url  
+            url = BASE_URL + m.name + URL_SUFFIX   
         
         opener = urllib2.build_opener()     
         opener.addheaders = [('User-agent', 'Mozilla/5.0')] # Tell the site you're a browser
         try:
             page = opener.open(url)
         except urllib2.HTTPError:
-            print "DIDN'T READ LOL"
             url = BASE_URL + "KOTH/" + m.name + URL_SUFFIX
             try:
                 page = opener.open(url)
             except urllib2.HTTPError:
-                print "DIDN'T READ LOLLLL"
+                logging.info('Failed to find map.xml for ' + m.name)
                 return m
 
         html = page.read()
@@ -164,11 +165,11 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
 
             m.team_size = int(soup.find_all("team")[0]['max'])
 
-        except Exception:
+        except Exception, (err_msg):
             m.objective = None
             m.authors = []
             m.team_size = None
-            print "nonetype exception for " + url
+            logging.error('XML scraping exception for ' + m.name + ': ' + str(err_msg))
 
         return m
 
@@ -176,7 +177,7 @@ class UpdateServerStatsHandler(webapp2.RequestHandler):
     """ Updates server stats from maps """
 
     def get(self):
-        print "updating servers"
+        logging.info("Updating server stats")
 
         servers = Server.query()
         servers = list(servers)
@@ -236,13 +237,14 @@ class UpdateServerStatsHandler(webapp2.RequestHandler):
             s.avg_rotation_length = avg_rotation_length
             
             s.put()
-        
+
+        logging.info("Server stats updated.")
 
 class UpdateMapMakersHandler(webapp2.RequestHandler):
     """ Updates map maker stats """
 
     def get(self):
-        print "updating map maker"
+        logging.info("Updating map makers")
 
         map_makers = MapMaker.query()
         map_makers = list(map_makers)
@@ -294,6 +296,7 @@ class UpdateMapMakersHandler(webapp2.RequestHandler):
             
             mm.put()
 
+        logging.info("Map makers updated")
 
 class UpdateOCNStatsHandler(webapp2.RequestHandler):
     """ Updates OCN stats from servers """
