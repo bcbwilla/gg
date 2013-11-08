@@ -108,8 +108,10 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
             if m.authors:
                 for map_maker in m.authors:
                     mm = MapMaker.get_or_insert(map_maker.lower())
-                    mm.maps.append(m.name)
                     mm.name = map_maker
+                    if m.name not in mm.maps:
+                        mm.maps.append(m.name)
+                    
                     mm.put()
                     
             m.put()
@@ -122,33 +124,45 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
         URL_SUFFIX = "/map.xml"
 
         page_get = True
+        
+        print "\n\nMAP NAME: " + mapp.name
 
         # check if Ghost Squadron map
         if mapp.name[:3].lower() == "gs:":
             url = BASE_URL + "/GS/" + mapp.name[4:] + URL_SUFFIX
+            print "   is ghost squadron, url: " + url
         else:
-            url = BASE_URL + mapp.name + URL_SUFFIX    
+            url = BASE_URL + mapp.name + URL_SUFFIX  
+            print "   is not ghost squadron, url: " + url  
         
         try:
             page = urlfetch.fetch(url,validate_certificate=False,
                                     headers = {'User-Agent': 'Mozilla/5.0'})
         except Exception:    
-            print "url error for map " + mapp.name       
+            print "url error for map " + mapp.name
+            print "url " + url       
             page_get = False    
 
+        print "page status code: " + str(page.status_code)
         if page_get and page.status_code == 200:
             xml = page.content
             soup =  BeautifulSoup(xml)
 
-            objective = soup.find("objective").contents[0]
+            try:
+                objective = soup.find("objective").contents[0]
 
-            authors = []
-            for author in soup.find_all("author"):
-                authors.append(author.contents[0])
+                authors = []
+                for author in soup.find_all("author"):
+                    authors.append(author.contents[0])
 
-            authors = authors
+                authors = authors
 
-            team_size = int(soup.find_all("team")[0]['max'])
+                team_size = int(soup.find_all("team")[0]['max'])
+            except Exception:
+                objective = None
+                authors = []
+                team_size = None
+                print "nonetype exception for " + url
 
         else:
             objective = None
