@@ -16,7 +16,7 @@ class GetMatchesHandler(webapp2.RequestHandler):
 
     def get(self):
         logging.info("Getting matches")
-        scraper.scrape_matches(8)
+        scraper.scrape_matches(100)
         logging.info("Matches gotten")
 
 
@@ -136,9 +136,6 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
             url = BASE_URL + "/GS/" + m.name[4:] + URL_SUFFIX
         else:
             url = BASE_URL + m.name + URL_SUFFIX   
-        
-        opener = urllib2.build_opener()     
-        opener.addheaders = [('User-agent', 'Mozilla/5.0')] # Tell the site you're a browser
 
 
         try:
