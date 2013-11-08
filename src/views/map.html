@@ -9,35 +9,47 @@
         <div class="row">
           <div class="col-md-4 col-md-offset-2">
             <h2>{{ mapp.name }}</h2>
+            
+            {% if mapp.objective and mapp.authors %}
 
-            {% if mapp.objective %}
+                {% if mapp.objective %}
+                <hr>
+                <div class="row">
+                  <div class="col-md-12">
+                    <h4>Objective: </h4>
+                    <h5>{{ mapp.objective }}</h5>
+                  </div>  <!-- /.col -->
+                </div>    <!-- /. row -->
+                {% endif %}
+
+                {% if mapp.authors %}
+                <div class="row">
+                  <div class="col-md-12">
+                    {% set n_authors = mapp.authors | length %}
+                    {% if n_authors > 1: %}
+                    <h4>Authors:</h4>
+                    {% else %}
+                    <h4>Author:</h4>
+                    {% endif %}
+                    <h5>
+                      {% for ma in mapp.authors %}
+                      {% if loop.index < n_authors %}
+                      <a href="/mapmaker?n={{ma}}">{{ ma }}</a>,
+                      {% else %}
+                      <a href="/mapmaker?n={{ma}}">{{ ma }}</a>
+                      {% endif %}
+                      {% endfor %}
+                    </h5>
+                  </div>  <!-- /.col -->
+                </div>    <!-- /. row -->
+                {% endif %}
+
+            {% else %}
             <hr>
             <div class="row">
               <div class="col-md-12">
-                <h4>Objective: </h4>
-                <h5>{{ mapp.objective }}</h5>
-              </div>  <!-- /.col -->
-            </div>    <!-- /. row -->
-            {% endif %}
-
-            {% if mapp.authors %}
-            <div class="row">
-              <div class="col-md-12">
-                {% set n_authors = mapp.authors | length %}
-                {% if n_authors > 1: %}
-                <h4>Authors:</h4>
-                {% else %}
-                <h4>Author:</h4>
-                {% endif %}
-                <h5>
-                  {% for ma in mapp.authors %}
-                  {% if loop.index < n_authors %}
-                  <a href="/mapmaker?n={{ma}}">{{ ma }}</a>,
-                  {% else %}
-                  <a href="/mapmaker?n={{ma}}">{{ ma }}</a>
-                  {% endif %}
-                  {% endfor %}
-                </h5>
+                <h5>Objective and authors not available because
+                    map.xml is not located at <em>maps.oc.tc/mapname/map.xml</em>.</h5>
               </div>  <!-- /.col -->
             </div>    <!-- /. row -->
             {% endif %}
