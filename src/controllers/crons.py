@@ -2,7 +2,6 @@
 """
 
 import webapp2
-import urllib2
 import logging
 import numpy as np
 
@@ -17,7 +16,7 @@ class GetMatchesHandler(webapp2.RequestHandler):
 
     def get(self):
         logging.info("Getting matches")
-        scraper.scrape_matches(4)
+        scraper.scrape_matches(8)
         logging.info("Matches gotten")
 
 
@@ -140,20 +139,29 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
         
         opener = urllib2.build_opener()     
         opener.addheaders = [('User-agent', 'Mozilla/5.0')] # Tell the site you're a browser
+
+
         try:
-            page = opener.open(url)
-        except urllib2.HTTPError:
-            url = BASE_URL + "KOTH/" + m.name + URL_SUFFIX
+            page = urlfetch.fetch(url,validate_certificate=False,
+                                  headers = {'User-Agent': 'Mozilla/5.0'})
+            
+            if page.status_code != 200:
+                url = BASE_URL + "KOTH/" + m.name + URL_SUFFIX
+                page = urlfetch.fetch(url,validate_certificate=False,
+                                      headers = {'User-Agent': 'Mozilla/5.0'})
+            xml = page.content
+            
+        except Exception:
+            
             try:
-                page = opener.open(url)
-            except urllib2.HTTPError:
-                logging.info('Failed to find map.xml for ' + m.name)
+                page = urlfetch.fetch(url,validate_certificate=False,
+                                      headers = {'User-Agent': 'Mozilla/5.0'})
+                xml = page.content         
+            except Exception, (err_msg):
+                logging.error("Can't find xml for " + m.name + ': ' + str(err_msg))
                 return m
-
-        html = page.read()
-        page.close()       
-        soup =  BeautifulSoup(html) 
-
+      
+        soup =  BeautifulSoup(xml) 
 
         try:
             m.objective = soup.find("objective").contents[0]
@@ -170,6 +178,7 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
             m.authors = []
             m.team_size = None
             logging.error('XML scraping exception for ' + m.name + ': ' + str(err_msg))
+            logging.error('URL: ' + url)
 
         return m
 
