@@ -1,5 +1,6 @@
 import urllib2
 import time
+import random
 from datetime import timedelta
 
 from bs4 import BeautifulSoup
@@ -31,6 +32,14 @@ def scrape_matches(last_page=2):
         table = soup.findAll('table', {'class':'table table-bordered table-striped'})
         table = table[0].contents[3].findAll('tr')
         
+
+        # Short GS matches clog the database.  Only add them sometimes.
+        if random.randint(1,10) < 3:
+            do_gs = True
+        else:
+            do_gs = False
+
+
         for row in table:
             match = Match()
             when = row.contents[1].a.contents[0].strip().lower() # when match took place
@@ -56,10 +65,15 @@ def scrape_matches(last_page=2):
                 except ValueError:
                     print "Trouble converting match 'when' to integer"
 
-                map_name = row.contents[5].contents[0].strip()        
+
+                map_name = row.contents[5].contents[0].strip() 
                 match.map_name = map_name
 
+               
                 server_name = row.contents[7].a.contents[0].strip()
+                if server_name[:2].lower() == "gs" and not do_gs:
+                    continue
+ 
                 match.server = server_name
 
                 match.kills = int(row.contents[11].contents[0].strip())
