@@ -133,7 +133,7 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
 
         # check if Ghost Squadron map
         if m.name[:3].lower() == "gs:":
-            url = BASE_URL + "/GS/" + m.name[4:] + URL_SUFFIX
+            url = BASE_URL + "GS/" + m.name[4:] + URL_SUFFIX
         else:
             url = BASE_URL + m.name + URL_SUFFIX   
 
