@@ -9,7 +9,7 @@ from google.appengine.api import urlfetch
 from models.models import Match, Map, Server
 
 
-def scrape_matches(last_page=2):
+def scrape_matches(pages=2):
     """ gets match statistics from oc.tc/matches pages
     
         last_page - the highest match page to scrape data from. don't go too high!
@@ -21,8 +21,11 @@ def scrape_matches(last_page=2):
     """
     
     base_url = "https://oc.tc/matches?page="
-    
-    for page in range(1,last_page):
+
+    first_page = 10 # Lots of matches before page 10 are "in progress"
+    last_page = first_page + pages + 1
+
+    for page in range(first_page,last_page):
         url = base_url+str(page)
 
         page = urlfetch.fetch(url,validate_certificate=False,
@@ -45,26 +48,6 @@ def scrape_matches(last_page=2):
             when = row.contents[1].a.contents[0].strip().lower() # when match took place
             # make sure match ended, and convert time ago to minutes
             if not 'in progress' in when:
-                try:
-                    if "less" in when:
-                        when = 0
-                    elif "minute" in when:
-                        when = int(when.split()[0])
-                    elif "hour" in when:
-                        when = int(when.split()[0])*60
-                    elif "day" in when:
-                        when = int(when.split()[0])*60*24
-                    elif "month" in when:
-                        when = int(when.split()[1])*60*24*30
-                    else:
-                        print "dunno, when=" + when
-                        continue
-                    
-                    match.when = when
-                    
-                except ValueError:
-                    print "Trouble converting match 'when' to integer"
-
 
                 map_name = row.contents[5].contents[0].strip() 
                 match.map_name = map_name

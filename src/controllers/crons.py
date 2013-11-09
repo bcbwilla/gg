@@ -16,7 +16,7 @@ class GetMatchesHandler(webapp2.RequestHandler):
 
     def get(self):
         logging.info("Getting matches")
-        scraper.scrape_matches(100)
+        scraper.scrape_matches(5)
         logging.info("Matches gotten")
 
 
@@ -155,7 +155,7 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
                                       headers = {'User-Agent': 'Mozilla/5.0'})
                 xml = page.content         
             except Exception, (err_msg):
-                logging.error("Can't find xml for " + m.name + ': ' + str(err_msg))
+                logging.warning("Can't find xml for " + m.name + ': ' + str(err_msg))
                 return m
       
         soup =  BeautifulSoup(xml) 
@@ -174,8 +174,7 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
             m.objective = None
             m.authors = []
             m.team_size = None
-            logging.error('XML scraping exception for ' + m.name + ': ' + str(err_msg))
-            logging.error('URL: ' + url)
+            logging.warning('XML scraping exception for ' + m.name + ': ' + str(err_msg))
 
         return m
 
@@ -258,6 +257,8 @@ class UpdateMapMakersHandler(webapp2.RequestHandler):
         maps = Map.query()
         maps = list(maps)
 
+        logging.info(len(maps))
+
         for mm in map_makers:
             lengths = []
             kills = []
@@ -265,17 +266,25 @@ class UpdateMapMakersHandler(webapp2.RequestHandler):
             participants = []
             servers = []
             maps = []
+            logging.info("\n\nMaker: " + mm.name)
 
             for mapp in maps:
+                logging.info("Map: " + mapp.name)
                 if mm.name in mapp.authors:
+                    logging.info("Is author")
                     if not mapp.name in mm.maps:
                         mm.maps.append(mapp.name)
-                
+                    logging.info("mapp.avg_length = " + str(mapp.avg_length))
                     if mapp.avg_length != None:
                         lengths.append(mapp.avg_length)
                         kills.append(mapp.avg_kills)
                         deaths.append(mapp.avg_deaths)
                         participants.append(mapp.avg_participants)
+
+            logging.info("lengths: " + str(lengths))
+            logging.info("kills: " + str(kills))
+            logging.info("deaths: " + str(deaths))
+            logging.info("parti: " + str(participants))
 
             lengths = np.array(lengths)
             kills = np.array(kills)
