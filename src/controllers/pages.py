@@ -29,7 +29,7 @@ class MapPage(webapp2.RequestHandler):
         json_rep = self.request.get('json')
 
         if map_name: 
-            mapp = Map.get_by_id(map_name.lower())
+            mapp = Map.get_by_id(map_name)
 
             if json_rep == "true":
                 self.response.headers['Content-Type'] = 'text/plain'
@@ -67,7 +67,7 @@ class ServerPage(webapp2.RequestHandler):
         json_rep = self.request.get('json')
 
         if server_name:
-            server = Server.get_by_id(server_name.lower())
+            server = Server.get_by_id(server_name)
 
             if json_rep == "true":
                 self.response.headers['Content-Type'] = 'text/plain'
@@ -103,7 +103,7 @@ class MapMakerPage(webapp2.RequestHandler):
         name = self.request.get('n')
 
         if name: 
-            mm = MapMaker.get_by_id(name.lower())
+            mm = MapMaker.get_by_id(name)
             self.render_page(mm)
 
         else:
