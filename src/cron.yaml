@@ -10,8 +10,8 @@ cron:
 - description: Update server stats
   url: /crons/updateservers
   schedule: every day 03:10
-  target: updateservers
+  target: updatemaps
 - description: Update map makers
   url: /crons/updatemapmakers
   schedule: every day 03:20
-  target: updateservers
+  target: updatemaps
