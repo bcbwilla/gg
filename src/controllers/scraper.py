@@ -42,8 +42,6 @@ def scrape_matches(pages=2):
         else:
             do_short = False
 
-        print "do_short = " + str(do_short)
-
         for row in table:
             match = Match()
             when = row.contents[1].a.contents[0].strip().lower() # when match took place
