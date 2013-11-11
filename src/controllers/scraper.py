@@ -23,7 +23,7 @@ def scrape_matches(pages=2):
     base_url = "https://oc.tc/matches?page="
 
     first_page = 10 # Lots of matches before page 10 are "in progress"
-    last_page = first_page + pages + 1
+    last_page = first_page + pages
 
     for page in range(first_page,last_page):
         url = base_url+str(page)
@@ -36,12 +36,13 @@ def scrape_matches(pages=2):
         table = table[0].contents[3].findAll('tr')
         
 
-        # Short GS matches clog the database.  Only add them sometimes.
+        # Short GS and blitz / rage matches clog the database.  Only add them sometimes.
         if random.randint(1,10) < 3:
-            do_gs = True
+            do_short = True
         else:
-            do_gs = False
+            do_short = False
 
+        print "do_short = " + str(do_short)
 
         for row in table:
             match = Match()
@@ -54,7 +55,10 @@ def scrape_matches(pages=2):
 
                
                 server_name = row.contents[7].a.contents[0].strip()
-                if server_name[:2].lower() == "gs" and not do_gs:
+                sn_l = server_name.lower()
+                # see if match server is a "short" one (gs, blitz, rage)
+                short_server = (sn_l[:2] == "gs") or ("cronus" in sn_l) or ("chaos" in sn_l) or ("rage" in sn_l)
+                if short_server and not do_short:
                     continue
  
                 match.server = server_name
@@ -72,14 +76,10 @@ def scrape_matches(pages=2):
                 match.put()
                 
                 # create map object if there isn't already one
-                mapp = Map.get_or_insert(map_name.lower())
-                mapp.name = map_name
-                mapp.put()
+                mapp = Map.get_or_insert(map_name)
                 
                 # create server object if there isn't already one
-                server = Server.get_or_insert(server_name.lower())
-                server.name = server_name
-                server.put()
+                server = Server.get_or_insert(server_name)
                 
 
         time.sleep(0.1)

@@ -16,7 +16,7 @@ class GetMatchesHandler(webapp2.RequestHandler):
 
     def get(self):
         logging.info("Getting matches")
-        scraper.scrape_matches(5)
+        scraper.scrape_matches(50)
         logging.info("Matches gotten")
 
 
@@ -44,7 +44,8 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
             is_on_EU = False
             is_on_US = False
 
-            map_name = m.name
+            map_name = m.key.id()
+            m.name = map_name
             matches = Match.query(Match.map_name == map_name)
     
             matches = list(matches)            
@@ -106,7 +107,7 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
 
             if m.authors:
                 for map_maker in m.authors:
-                    mm = MapMaker.get_or_insert(map_maker.lower())
+                    mm = MapMaker.get_or_insert(map_maker)
                     mm.name = map_maker
                     if m.name not in mm.maps:
                         mm.maps.append(m.name)
@@ -197,6 +198,8 @@ class UpdateServerStatsHandler(webapp2.RequestHandler):
             participants = []
             servers = []
 
+            s.name = s.key.id()
+
             for m in maps:
                 if s.name in m.servers:
                     if not m.name in s.maps:
@@ -234,7 +237,7 @@ class UpdateServerStatsHandler(webapp2.RequestHandler):
             # calculate average rotation length
             avg_rotation_length = 0
             for map_name in s.maps:
-                m = Map.get_by_id(map_name.lower())
+                m = Map.get_by_id(map_name)
                 
                 if m.avg_length != None:
                     avg_rotation_length += m.avg_length
@@ -266,25 +269,27 @@ class UpdateMapMakersHandler(webapp2.RequestHandler):
             participants = []
             servers = []
             maps = []
-            logging.info("\n\nMaker: " + mm.name)
+
+            m.name = m.key.id()
+            #logging.info("\n\nMaker: " + mm.name)
 
             for mapp in maps:
-                logging.info("Map: " + mapp.name)
+                #logging.info("Map: " + mapp.name)
                 if mm.name in mapp.authors:
-                    logging.info("Is author")
+                    #logging.info("Is author")
                     if not mapp.name in mm.maps:
                         mm.maps.append(mapp.name)
-                    logging.info("mapp.avg_length = " + str(mapp.avg_length))
+                    #logging.info("mapp.avg_length = " + str(mapp.avg_length))
                     if mapp.avg_length != None:
                         lengths.append(mapp.avg_length)
                         kills.append(mapp.avg_kills)
                         deaths.append(mapp.avg_deaths)
                         participants.append(mapp.avg_participants)
 
-            logging.info("lengths: " + str(lengths))
-            logging.info("kills: " + str(kills))
-            logging.info("deaths: " + str(deaths))
-            logging.info("parti: " + str(participants))
+            #logging.info("lengths: " + str(lengths))
+            #logging.info("kills: " + str(kills))
+            #logging.info("deaths: " + str(deaths))
+            #logging.info("parti: " + str(participants))
 
             lengths = np.array(lengths)
             kills = np.array(kills)
