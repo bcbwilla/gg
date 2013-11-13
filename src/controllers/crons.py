@@ -16,7 +16,7 @@ class GetMatchesHandler(webapp2.RequestHandler):
 
     def get(self):
         logging.info("Getting matches")
-        scraper.scrape_matches(50)
+        scraper.scrape_matches(1)
         logging.info("Matches gotten")
 
 
@@ -131,12 +131,13 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
 
         page_get = True
         
+        m_name = m.name.replace(" ", "%20") # replace spaces in URL with %20
 
         # check if Ghost Squadron map
         if m.name[:3].lower() == "gs:":
             url = BASE_URL + "GS/" + m.name[4:] + URL_SUFFIX
         else:
-            url = BASE_URL + m.name + URL_SUFFIX   
+            url = BASE_URL + m_name + URL_SUFFIX   
 
 
         try:
@@ -144,7 +145,7 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
                                   headers = {'User-Agent': 'Mozilla/5.0'})
             
             if page.status_code != 200:
-                url = BASE_URL + "KOTH/" + m.name + URL_SUFFIX
+                url = BASE_URL + "KOTH/" + m_name + URL_SUFFIX
                 page = urlfetch.fetch(url,validate_certificate=False,
                                       headers = {'User-Agent': 'Mozilla/5.0'})
             xml = page.content
