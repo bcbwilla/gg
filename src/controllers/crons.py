@@ -270,7 +270,7 @@ class UpdateMapMakersHandler(webapp2.RequestHandler):
             servers = []
             maps = []
 
-            m.name = m.key.id()
+            mm.name = mm.key.id()
             #logging.info("\n\nMaker: " + mm.name)
 
             for mapp in maps:
