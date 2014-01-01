@@ -7,12 +7,7 @@
         <br><br><br>
     
         <div class="row">
-          <div class="col-md-6 col-md-offset-3">
-
-            <div class="alert alert-info alert-dismissable">
-              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-              <strong>Tip:</strong> Click the name of a map to see even more info!
-            </div>             
+          <div class="col-md-6 col-md-offset-3">     
         
             <table class="table table-condensed table-hover table-bordered">
               <thead>
@@ -28,6 +23,7 @@
               <tbody>
                 {% for m in maps %}
                 <tr>
+                  {% if m.name != None %}
                   <td><a href="/map?n={{m.name}}">{{ m.name }}</a></td>
        <!--           <td> </td> -->
                   {% if m.avg_kills != None %}
@@ -41,6 +37,7 @@
                   {% endif %}
                   <td>{{ m.n_matches }}</td>
                 </tr>
+                {% endif %}
                 {% endfor %}
               </tbody>
             </table>
