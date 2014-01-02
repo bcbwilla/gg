@@ -16,7 +16,7 @@ class GetMatchesHandler(webapp2.RequestHandler):
 
     def get(self):
         logging.info("Getting matches")
-        scraper.scrape_matches(4)
+        scraper.scrape_matches(10)
         logging.info("Matches gotten")
 
 
@@ -27,8 +27,7 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
     def get(self):
         logging.info('Updating map stats.')
 
-        maps = Map.query()
-        maps = list(maps)
+        maps = Map.query().fetch()
 
         # get total number of map instances on servers
         total_maps = 0
@@ -46,9 +45,8 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
 
             map_name = m.key.id()
             m.name = map_name
-            matches = Match.query(Match.map_name == map_name)
-    
-            matches = list(matches)            
+            # compute stats from only 50 most recent matches.
+            matches = Match.query(Match.map_name == map_name).order(-Match.date).fetch(100)
            
             for match in matches:
                 lengths.append(match.length)
@@ -115,7 +113,7 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
                     mm.put()
                     
             m.put()
-           
+
         logging.info('Map stats updated.')
 
     def get_map_xml_data(self, m):
@@ -186,11 +184,9 @@ class UpdateServerStatsHandler(webapp2.RequestHandler):
     def get(self):
         logging.info("Updating server stats")
 
-        servers = Server.query()
-        servers = list(servers)
+        servers = Server.query().fetch()
 
-        maps = Map.query()
-        maps = list(maps)
+        maps = Map.query().fetch()
 
         for s in servers:
             lengths = []
@@ -255,13 +251,13 @@ class UpdateMapMakersHandler(webapp2.RequestHandler):
     def get(self):
         logging.info("Updating map makers")
 
-        map_makers = MapMaker.query()
-        map_makers = list(map_makers)
+        map_makers = MapMaker.query().fetch()
 
-        maps = Map.query()
-        maps = list(maps)
+        maps = Map.query().fetch()
 
         logging.info(len(maps))
+        for m in maps:
+            logging.info(m.authors)
 
         for mm in map_makers:
             lengths = []
@@ -269,28 +265,18 @@ class UpdateMapMakersHandler(webapp2.RequestHandler):
             deaths = []
             participants = []
             servers = []
-            maps = []
 
             mm.name = mm.key.id()
-            #logging.info("\n\nMaker: " + mm.name)
 
             for mapp in maps:
-                #logging.info("Map: " + mapp.name)
                 if mm.name in mapp.authors:
-                    #logging.info("Is author")
                     if not mapp.name in mm.maps:
                         mm.maps.append(mapp.name)
-                    #logging.info("mapp.avg_length = " + str(mapp.avg_length))
                     if mapp.avg_length != None:
                         lengths.append(mapp.avg_length)
                         kills.append(mapp.avg_kills)
                         deaths.append(mapp.avg_deaths)
                         participants.append(mapp.avg_participants)
-
-            #logging.info("lengths: " + str(lengths))
-            #logging.info("kills: " + str(kills))
-            #logging.info("deaths: " + str(deaths))
-            #logging.info("parti: " + str(participants))
 
             lengths = np.array(lengths)
             kills = np.array(kills)
