@@ -4,6 +4,8 @@
 import json
 from datetime import datetime, timedelta
 
+from bs4 import BeautifulSoup
+from google.appengine.api import urlfetch, urlfetch_errors
 from google.appengine.ext import ndb
 
 class GGModelBase(object):
@@ -43,7 +45,8 @@ class GGModelBase(object):
         else:
             return []
 
-                    
+    
+
 class Map(ndb.Model,GGModelBase):
     """ Represents a map """
 
