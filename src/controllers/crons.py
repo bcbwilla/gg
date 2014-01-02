@@ -16,7 +16,7 @@ class GetMatchesHandler(webapp2.RequestHandler):
 
     def get(self):
         logging.info("Getting matches")
-        scraper.scrape_matches(1)
+        scraper.scrape_matches(4)
         logging.info("Matches gotten")
 
 

@@ -20,7 +20,7 @@
               <tbody>
                 {% for s in servers %}
                 <tr>
-                  <td><a href="/server?n={{s.name}}">{{ s.name }}</a></td>
+                  <td><a href="/server/{{s.name}}">{{ s.name }}</a></td>
                   {% if s.avg_rotation_length_s != "0:00:00" %}
                   <td>{{ s.avg_rotation_length_s }}</td>
                   {% else %}

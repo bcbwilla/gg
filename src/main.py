@@ -7,12 +7,13 @@ import webapp2
 from controllers import pages, crons
 
 app = webapp2.WSGIApplication([('/', pages.MainPage), 
-                               ('/map', pages.MapPage),
-                               ('/server', pages.ServerPage),
+                               (r'/map/(.*)', pages.MapPage),
+                               (r'/server/(.*)', pages.ServerPage),
                                ('/maps', pages.MapsPage),
                                ('/servers', pages.ServersPage),
-                               ('/mapmaker',pages.MapMakerPage),
+                               (r'/mapmaker/(.*)',pages.MapMakerPage),
                                ('/mapmakers',pages.MapMakersPage),
+                               (r'/data/(.*)',pages.JsonNamePage),
                                ('/crons/getmatches', crons.GetMatchesHandler),
                                ('/crons/updatemaps', crons.UpdateMapStatsHandler),
                                ('/crons/updateservers', crons.UpdateServerStatsHandler),

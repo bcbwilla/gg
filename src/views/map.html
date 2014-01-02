@@ -34,9 +34,9 @@
                     <h5>
                       {% for ma in mapp.authors %}
                       {% if loop.index < n_authors %}
-                      <a href="/mapmaker?n={{ma}}">{{ ma }}</a>,
+                      <a href="/mapmaker/{{ma}}">{{ ma }}</a>,
                       {% else %}
-                      <a href="/mapmaker?n={{ma}}">{{ ma }}</a>
+                      <a href="/mapmaker/{{ma}}">{{ ma }}</a>
                       {% endif %}
                       {% endfor %}
                     </h5>
@@ -77,7 +77,7 @@
                     </button>
                     <ul class="dropdown-menu" role="menu">
                     {% for server in mapp.servers %}
-                      <li><a href="/server?n={{server}}">{{ server }}</a></li>
+                      <li><a href="/server/{{server}}">{{ server }}</a></li>
                     {% endfor %}
                     </ul>
                   </div>

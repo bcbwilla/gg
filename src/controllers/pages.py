@@ -3,6 +3,8 @@
 import webapp2
 import jinja2
 import os
+import json
+import cgi
 
 from models.models import Map, Server, MapMaker
 
@@ -10,22 +12,33 @@ from models.models import Map, Server, MapMaker
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), '../views')))
 
+class Handler(webapp2.RequestHandler):
 
-class MainPage(webapp2.RequestHandler):
+    def render(self, template, **kwargs):
+        """ Renders page  
+
+            template -- .html jinja2 template to render
+            **kwargs -- keyword arguments to pass to template
+        """
+
+        template = JINJA_ENVIRONMENT.get_template(template)
+        self.response.write(template.render(**kwargs))
+
+
+class MainPage(Handler):
     """ Main page.
         Just redirects to /maps for now.
     """
     
     def get(self):
-        self.redirect('/maps')        
+        self.redirect('/maps')
 
 
-class MapPage(webapp2.RequestHandler):
+class MapPage(Handler):
     """ Map page."""
     
-    def get(self):
+    def get(self, map_name):
         # query arguments
-        map_name = self.request.get('n')
         json_rep = self.request.get('json')
 
         if map_name: 
@@ -39,15 +52,26 @@ class MapPage(webapp2.RequestHandler):
 
         else:
             self.redirect('/maps')
+
+    def post(self):
+        """ Default post method for nav search bar """
+        search = cgi.escape(self.request.get('search')).strip()
+        mt = model_type(search)
+
+        if mt == "map":
+            self.redirect("../map/" + search)
+        elif mt == "server":
+            self.redirect("../server/" + search)
+        elif mt == "mapmaker":
+            self.redirect("../mapmaker/" + search)
+        else:
+            self.redirect("/")
         
-    def render_page(self, mapp, json_rep=False):
+    def render_page(self, mapp):
         """ Renders map page 
 
         Positional arguments:
         mapp -- Map object 
-
-        Keyword arguments:
-        json_rep -- if to display page as json string
         
         """
 
@@ -59,11 +83,10 @@ class MapPage(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 
 
-class ServerPage(webapp2.RequestHandler):
+class ServerPage(Handler):
     """ renders a map page """
     
-    def get(self):
-        server_name = self.request.get('n')  
+    def get(self, server_name):  
         json_rep = self.request.get('json')
 
         if server_name:
@@ -77,6 +100,20 @@ class ServerPage(webapp2.RequestHandler):
 
         else:
             self.redirect('/servers')
+
+    def post(self):
+        """ Default post method for nav search bar """
+        search = cgi.escape(self.request.get('search')).strip()
+        mt = model_type(search)
+
+        if mt == "map":
+            self.redirect("../map/" + search)
+        elif mt == "server":
+            self.redirect("../server/" + search)
+        elif mt == "mapmaker":
+            self.redirect("../mapmaker/" + search)
+        else:
+            self.redirect("/")
         
 
     def render_page(self, server):
@@ -95,12 +132,10 @@ class ServerPage(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 
 
-class MapMakerPage(webapp2.RequestHandler):
+class MapMakerPage(Handler):
     """ Map page."""
     
-    def get(self):
-        # query arguments
-        name = self.request.get('n')
+    def get(self, name):
 
         if name: 
             mm = MapMaker.get_by_id(name)
@@ -108,7 +143,21 @@ class MapMakerPage(webapp2.RequestHandler):
 
         else:
             self.redirect('/')
-        
+
+    def post(self):
+        """ Default post method for nav search bar """
+        search = cgi.escape(self.request.get('search')).strip()
+        mt = model_type(search)
+
+        if mt == "map":
+            self.redirect("../map/" + search)
+        elif mt == "server":
+            self.redirect("../server/" + search)
+        elif mt == "mapmaker":
+            self.redirect("../mapmaker/" + search)
+        else:
+            self.redirect("/")
+
     def render_page(self, mm):
         """ Renders map page 
 
@@ -125,7 +174,7 @@ class MapMakerPage(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 
 
-class MapsPage(webapp2.RequestHandler):
+class MapsPage(Handler):
 
     def get(self):
         sort = self.request.get('sort')
@@ -133,7 +182,21 @@ class MapsPage(webapp2.RequestHandler):
 
         objs = get_data_for_table(Map, sort, page)
 
-        self.render_page(objs['objs'], objs['page'], objs['count'], objs['sort'])     
+        self.render_page(objs['objs'], objs['page'], objs['count'], objs['sort']) 
+
+    def post(self):
+        """ Default post method for nav search bar """
+        search = cgi.escape(self.request.get('search')).strip()
+        mt = model_type(search)
+
+        if mt == "map":
+            self.redirect("../map/" + search)
+        elif mt == "server":
+            self.redirect("../server/" + search)
+        elif mt == "mapmaker":
+            self.redirect("../mapmaker/" + search)
+        else:
+            self.redirect("/")
     
     def render_page(self, maps, page, count, sort):
         """ Renders maps page 
@@ -159,7 +222,7 @@ class MapsPage(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 
 
-class MapMakersPage(webapp2.RequestHandler):
+class MapMakersPage(Handler):
 
     def get(self):
         sort = self.request.get('sort')
@@ -167,7 +230,21 @@ class MapMakersPage(webapp2.RequestHandler):
 
         objs = get_data_for_table(MapMaker, sort, page)
 
-        self.render_page(objs['objs'], objs['page'], objs['count'], objs['sort'])     
+        self.render_page(objs['objs'], objs['page'], objs['count'], objs['sort'])    
+
+    def post(self):
+        """ Default post method for nav search bar """
+        search = cgi.escape(self.request.get('search')).strip()
+        mt = model_type(search)
+
+        if mt == "map":
+            self.redirect("../map/" + search)
+        elif mt == "server":
+            self.redirect("../server/" + search)
+        elif mt == "mapmaker":
+            self.redirect("../mapmaker/" + search)
+        else:
+            self.redirect("/") 
     
     def render_page(self, mms, page, count, sort):
         """ Renders maps page 
@@ -193,7 +270,7 @@ class MapMakersPage(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 
 
-class ServersPage(webapp2.RequestHandler):
+class ServersPage(Handler):
 
     def get(self):
 
@@ -202,7 +279,21 @@ class ServersPage(webapp2.RequestHandler):
 
         objs = get_data_for_table(Server, sort, page)
 
-        self.render_page(objs['objs'], objs['page'], objs['count'], objs['sort'])   
+        self.render_page(objs['objs'], objs['page'], objs['count'], objs['sort'])
+
+    def post(self):
+        """ Default post method for nav search bar """
+        search = cgi.escape(self.request.get('search')).strip()
+        mt = model_type(search)
+
+        if mt == "map":
+            self.redirect("../map/" + search)
+        elif mt == "server":
+            self.redirect("../server/" + search)
+        elif mt == "mapmaker":
+            self.redirect("../mapmaker/" + search)
+        else:
+            self.redirect("/")
     
     def render_page(self, servers, page, count, sort):
         """ Renders servers page 
@@ -225,6 +316,25 @@ class ServersPage(webapp2.RequestHandler):
         }
         template = JINJA_ENVIRONMENT.get_template('servers.html')
         self.response.write(template.render(template_values))
+
+
+class JsonNamePage(Handler):
+    """ Returns .json page with list of names of all datastore entites.
+        For use with typeahead.js search function
+    """
+
+    def get(self, entity):
+        if entity.lower() == "maps":
+            names = Map.names()
+        elif entity.lower() == "servers":
+            names = Server.names()
+        elif entity.lower() == "mapmakers":
+            names = MapMaker.names()
+        else:
+            self.redirect("/")
+
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(json.dumps(names))
 
 
 def get_data_for_table(ModelObject, sort, page):
@@ -258,3 +368,10 @@ def get_data_for_table(ModelObject, sort, page):
 
     return {'objs': objs, 'count': count, 'page': page, 'sort': sort} 
 
+def model_type(name):
+    if name in Map.names():
+        return "map"
+    elif name in Server.names():
+        return "server"
+    elif name in MapMaker.names():
+        return "mapmaker"

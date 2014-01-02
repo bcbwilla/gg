@@ -20,3 +20,28 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="../assets/dist/js/bootstrap.min.js"></script>
+    <script src="../assets/dist/js/typeahead.min.js"></script>
+
+    <!-- for search bar -->
+    <script>
+    window.localStorage.clear()
+    $(document).ready(function() {
+         $('#query').typeahead([{                              
+              name: 'maps',         
+              prefetch: '../data/maps',
+              header: '<h4 class="tt-suggestion-sec">Maps</h4>'                                                  
+             },
+             {
+              name: 'servers',
+              prefetch: '../data/servers',
+              header: '<h4 class="tt-suggestion-sec">Servers</h4>'
+             },
+             {
+              name: 'mapmakers',
+              prefetch: '../data/mapmakers',
+              header: '<h4 class="tt-suggestion-sec">Map Makers</h4>'
+             } 
+]);
+    $('.tt-query').css('background-color','#fff');
+    });
+    </script>

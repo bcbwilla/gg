@@ -23,7 +23,7 @@
               <tbody>
                 {% for mm in mms %}
                 <tr>
-                  <td><a href="/mapmaker?n={{mm.name}}">{{ mm.name }}</a></td>
+                  <td><a href="/mapmaker/{{mm.name}}">{{ mm.name }}</a></td>
        <!--           <td> </td> -->
                   {% if mm.avg_kills != None %}
                   <td>{{ mm.avg_kills | round(2) }}</td>

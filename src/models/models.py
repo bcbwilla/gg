@@ -6,7 +6,45 @@ from datetime import datetime, timedelta
 
 from google.appengine.ext import ndb
 
-class Map(ndb.Model):
+class GGModelBase(object):
+    """ Base class for all datastore models """
+
+    @classmethod
+    def names(cls):
+        """ Returns a list of all of the names
+            of entity instances.  For use with
+            typeahead.js searchbox.
+    
+            Using class must have attribute "name" defined.
+        """
+        
+        if hasattr(cls, "name"):
+            objs = cls().query().fetch(projection=[cls.name])
+            names = [obj.name for obj in objs]
+            
+            return names
+
+        else:
+            return []
+
+        
+    @classmethod
+    def top(cls, attr, ascending, limit):
+        if hasattr(cls, attr):
+            if ascending:
+                qry = cls().query().order(getattr(cls,attr))
+            else:
+                qry = cls().query().order(-getattr(cls,attr))
+            
+            objs = qry.fetch(limit, projection=[getattr(cls,attr)])
+            
+            return objs
+
+        else:
+            return []
+
+                    
+class Map(ndb.Model,GGModelBase):
     """ Represents a map """
 
     name = ndb.StringProperty()
@@ -140,7 +178,7 @@ class OCN(ndb.Model):
     participants = ndb.IntegerProperty()
     time_played = ndb.IntegerProperty() # in seconds
 
-class Server(ndb.Model):
+class Server(ndb.Model,GGModelBase):
     """ Represents a server """
     
     name = ndb.StringProperty()    
@@ -266,7 +304,7 @@ class GameMode(ndb.Model):
     max_participants = ndb.IntegerProperty()
 
 
-class MapMaker(ndb.Model):
+class MapMaker(ndb.Model,GGModelBase):
     """ Represents a map maker """
 
     name = ndb.StringProperty()
