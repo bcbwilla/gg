@@ -5,6 +5,9 @@ import jinja2
 import os
 import json
 import cgi
+import logging
+
+from google.appengine.datastore.datastore_query import Cursor
 
 from models.models import Map, Server, MapMaker
 
@@ -23,6 +26,22 @@ class Handler(webapp2.RequestHandler):
 
         template = JINJA_ENVIRONMENT.get_template(template)
         self.response.write(template.render(**kwargs))
+
+    def post(self, *args):
+        """ Default post method for nav search bar """
+        search = cgi.escape(self.request.get('search')).strip()
+        mt = model_type(search)
+
+        logging.info(search)
+
+        if mt == "map":
+            self.redirect("/map/" + search)
+        elif mt == "server":
+            self.redirect("/server/" + search)
+        elif mt == "mapmaker":
+            self.redirect("/mapmaker/" + search)
+        else:
+            self.redirect("/")
 
 
 class MainPage(Handler):
@@ -45,42 +64,13 @@ class MapPage(Handler):
             mapp = Map.get_by_id(map_name)
 
             if json_rep == "true":
-                self.response.headers['Content-Type'] = 'text/plain'
+                self.response.headers['Content-Type'] = 'application/json'
                 self.response.write(mapp.to_json())
             else:
-                self.render_page(mapp)
+                self.render('map.html', mapp=mapp, page_title=mapp.name)
 
         else:
             self.redirect('/maps')
-
-    def post(self):
-        """ Default post method for nav search bar """
-        search = cgi.escape(self.request.get('search')).strip()
-        mt = model_type(search)
-
-        if mt == "map":
-            self.redirect("../map/" + search)
-        elif mt == "server":
-            self.redirect("../server/" + search)
-        elif mt == "mapmaker":
-            self.redirect("../mapmaker/" + search)
-        else:
-            self.redirect("/")
-        
-    def render_page(self, mapp):
-        """ Renders map page 
-
-        Positional arguments:
-        mapp -- Map object 
-        
-        """
-
-        template_values = {
-            'page_title': "Map: " + mapp.name,
-            'mapp': mapp
-        }
-        template = JINJA_ENVIRONMENT.get_template('map.html')
-        self.response.write(template.render(template_values))
 
 
 class ServerPage(Handler):
@@ -93,43 +83,13 @@ class ServerPage(Handler):
             server = Server.get_by_id(server_name)
 
             if json_rep == "true":
-                self.response.headers['Content-Type'] = 'text/plain'
+                self.response.headers['Content-Type'] = 'application/json'
                 self.response.write(server.to_json())
             else:
-                self.render_page(server)
+                self.render('server.html', page_title=server.name, server=server)
 
         else:
             self.redirect('/servers')
-
-    def post(self):
-        """ Default post method for nav search bar """
-        search = cgi.escape(self.request.get('search')).strip()
-        mt = model_type(search)
-
-        if mt == "map":
-            self.redirect("../map/" + search)
-        elif mt == "server":
-            self.redirect("../server/" + search)
-        elif mt == "mapmaker":
-            self.redirect("../mapmaker/" + search)
-        else:
-            self.redirect("/")
-        
-
-    def render_page(self, server):
-        """ Renders server page 
-
-        Positional arguments:
-        server -- Server object 
-        
-        """
-
-        template_values = {
-            'page_title': "Server: " + server.name,
-            'server': server
-        }
-        template = JINJA_ENVIRONMENT.get_template('server.html')
-        self.response.write(template.render(template_values))
 
 
 class MapMakerPage(Handler):
@@ -139,39 +99,10 @@ class MapMakerPage(Handler):
 
         if name: 
             mm = MapMaker.get_by_id(name)
-            self.render_page(mm)
+            self.render('mapmaker.html', mm=mm, page_title=mm.name)
 
         else:
             self.redirect('/')
-
-    def post(self):
-        """ Default post method for nav search bar """
-        search = cgi.escape(self.request.get('search')).strip()
-        mt = model_type(search)
-
-        if mt == "map":
-            self.redirect("../map/" + search)
-        elif mt == "server":
-            self.redirect("../server/" + search)
-        elif mt == "mapmaker":
-            self.redirect("../mapmaker/" + search)
-        else:
-            self.redirect("/")
-
-    def render_page(self, mm):
-        """ Renders map page 
-
-        Positional arguments:
-        mapp -- Map object 
-        
-        """
-
-        template_values = {
-            'page_title': "Map Maker: " + mm.name,
-            'mm': mm
-        }
-        template = JINJA_ENVIRONMENT.get_template('mapmaker.html')
-        self.response.write(template.render(template_values))
 
 
 class MapsPage(Handler):
@@ -182,44 +113,8 @@ class MapsPage(Handler):
 
         objs = get_data_for_table(Map, sort, page)
 
-        self.render_page(objs['objs'], objs['page'], objs['count'], objs['sort']) 
-
-    def post(self):
-        """ Default post method for nav search bar """
-        search = cgi.escape(self.request.get('search')).strip()
-        mt = model_type(search)
-
-        if mt == "map":
-            self.redirect("../map/" + search)
-        elif mt == "server":
-            self.redirect("../server/" + search)
-        elif mt == "mapmaker":
-            self.redirect("../mapmaker/" + search)
-        else:
-            self.redirect("/")
-    
-    def render_page(self, maps, page, count, sort):
-        """ Renders maps page 
-
-        Positional arguments:
-        maps -- list of Map objects 
-        page -- page of maps
-        count -- total number of map objects in datastore
-        sort -- query parameter to sort by
-        
-        """
-
-        template_values = {
-            'nav': 'maps',
-            'page_title': "Maps",
-            'maps': maps,
-            'sort': sort,
-            'page': page,
-            'count': count,
-            'base_url': "/maps"
-        }
-        template = JINJA_ENVIRONMENT.get_template('maps.html')
-        self.response.write(template.render(template_values))
+        self.render('maps.html', maps=objs['objs'], page=objs['page'], count=objs['count'], 
+                    sort=objs['sort'], base_url='/maps', page_title='Maps', nav='maps') 
 
 
 class MapMakersPage(Handler):
@@ -230,93 +125,21 @@ class MapMakersPage(Handler):
 
         objs = get_data_for_table(MapMaker, sort, page)
 
-        self.render_page(objs['objs'], objs['page'], objs['count'], objs['sort'])    
-
-    def post(self):
-        """ Default post method for nav search bar """
-        search = cgi.escape(self.request.get('search')).strip()
-        mt = model_type(search)
-
-        if mt == "map":
-            self.redirect("../map/" + search)
-        elif mt == "server":
-            self.redirect("../server/" + search)
-        elif mt == "mapmaker":
-            self.redirect("../mapmaker/" + search)
-        else:
-            self.redirect("/") 
-    
-    def render_page(self, mms, page, count, sort):
-        """ Renders maps page 
-
-        Positional arguments:
-        mms -- list of MapMaker objects 
-        page -- page of maps
-        count -- total number of map objects in datastore
-        sort -- query parameter to sort by
-        
-        """
-
-        template_values = {
-            'nav': 'mapmakers',
-            'page_title': "Map Authors",
-            'mms': mms,
-            'sort': sort,
-            'page': page,
-            'count': count,
-            'base_url': "/mapmakers"
-        }
-        template = JINJA_ENVIRONMENT.get_template('mapmakers.html')
-        self.response.write(template.render(template_values))
+        self.render('mapmakers.html', mms=objs['objs'], page=objs['page'], count=objs['count'], 
+                    sort=objs['sort'], nav='mapmakers', page_title='Map Authors', base_url='/mapmakers')    
 
 
 class ServersPage(Handler):
 
     def get(self):
-
         sort = self.request.get('sort')
         page = self.request.get('page')
 
         objs = get_data_for_table(Server, sort, page)
 
-        self.render_page(objs['objs'], objs['page'], objs['count'], objs['sort'])
-
-    def post(self):
-        """ Default post method for nav search bar """
-        search = cgi.escape(self.request.get('search')).strip()
-        mt = model_type(search)
-
-        if mt == "map":
-            self.redirect("../map/" + search)
-        elif mt == "server":
-            self.redirect("../server/" + search)
-        elif mt == "mapmaker":
-            self.redirect("../mapmaker/" + search)
-        else:
-            self.redirect("/")
+        self.render('servers.html', servers=objs['objs'], page=objs['page'], count=objs['count'], 
+                         sort=objs['sort'], nav='servers', page_title='Servers')
     
-    def render_page(self, servers, page, count, sort):
-        """ Renders servers page 
-
-        Positional arguments:
-        servers -- list of Server objects 
-        page -- page of maps
-        count -- total number of map objects in datastore
-        sort -- query parameter to sort by
-        
-        """
-
-        template_values = {
-            'nav': 'servers',
-            'page_title': "Servers",
-            'servers' : servers,
-            'sort': sort,
-            'page': page,
-            'count': count
-        }
-        template = JINJA_ENVIRONMENT.get_template('servers.html')
-        self.response.write(template.render(template_values))
-
 
 class JsonNamePage(Handler):
     """ Returns .json page with list of names of all datastore entites.
