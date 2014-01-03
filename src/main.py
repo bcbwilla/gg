@@ -5,6 +5,7 @@ Set all the url handlers to the corresponding urls
 import webapp2
 
 from controllers import pages, crons
+from maintenance import manual_update
 
 app = webapp2.WSGIApplication([('/', pages.MainPage), 
                                (r'/map/(.*)', pages.MapPage),
@@ -19,6 +20,7 @@ app = webapp2.WSGIApplication([('/', pages.MainPage),
                                ('/crons/updateservers', crons.UpdateServerStatsHandler),
                                ('/crons/updateocn', crons.UpdateOCNStatsHandler),
                                ('/crons/updategm', crons.UpdateGameModeHandler),
-                               ('/crons/updatemapmakers', crons.UpdateMapMakersHandler)
+                               ('/crons/updatemapmakers', crons.UpdateMapMakersHandler),
+                               ('/manual_update',  manual_update.ManualUpdateHandler)
                                ], debug=True)
 

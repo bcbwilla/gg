@@ -10,6 +10,9 @@ handlers:
 - url: /crons/.*
   script: main.app
   login: admin
+- url: /manual_update
+  script: main.app
+  login: admin
 - url: /.*
   script: main.app
   
