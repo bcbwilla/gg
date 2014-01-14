@@ -101,7 +101,7 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
                 m.percent_maps = len(servers) / float(total_maps)
 
             if not m.authors:
-                m = self.get_map_xml_data(m)
+                m = m.get_map_xml_data()
 
             if m.authors:
                 for map_maker in m.authors:
@@ -116,67 +116,7 @@ class UpdateMapStatsHandler(webapp2.RequestHandler):
 
         logging.info('Map stats updated.')
 
-    def get_map_xml_data(self, m):
-        """ Get more map information from map XML page 
-            
-            Positional Arguments:
-            mapp -- Map object 
-        
-        """
 
-        BASE_URL = "https://maps.oc.tc/"
-        URL_SUFFIX = "/map.xml"
-
-        page_get = True
-        
-        m_name = m.name.replace(" ", "%20") # replace spaces in URL with %20
-
-        # check if Ghost Squadron map
-        if m.name[:3].lower() == "gs:":
-            url = BASE_URL + "GS/" + m.name[4:] + URL_SUFFIX
-        else:
-            url = BASE_URL + m_name + URL_SUFFIX   
-
-
-        try:
-            page = urlfetch.fetch(url,validate_certificate=False,
-                                  headers = {'User-Agent': 'Mozilla/5.0'})
-            
-            if page.status_code != 200:
-                url = BASE_URL + "KOTH/" + m_name + URL_SUFFIX
-                page = urlfetch.fetch(url,validate_certificate=False,
-                                      headers = {'User-Agent': 'Mozilla/5.0'})
-            xml = page.content
-            
-        except Exception:
-            
-            try:
-                page = urlfetch.fetch(url,validate_certificate=False,
-                                      headers = {'User-Agent': 'Mozilla/5.0'})
-                xml = page.content         
-            except Exception, (err_msg):
-                logging.warning("Can't find xml for " + m.name + ': ' + str(err_msg))
-                return m
-      
-        soup =  BeautifulSoup(xml) 
-
-        try:
-            m.objective = soup.find("objective").contents[0]
-
-            authors = []
-            for author in soup.find_all("author"):
-                if not author in m.authors:
-                    m.authors.append(author.contents[0])
-
-            m.team_size = int(soup.find_all("team")[0]['max'])
-
-        except Exception, (err_msg):
-            m.objective = None
-            m.authors = []
-            m.team_size = None
-            logging.warning('XML scraping exception for ' + m.name + ': ' + str(err_msg))
-
-        return m
 
 class UpdateServerStatsHandler(webapp2.RequestHandler):
     """ Updates server stats from maps """
