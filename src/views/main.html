@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    {% include 'header.html' %}
+
+    <!-- Load the charts -->
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable(
+            {{ longest_maps_data }}
+        );
+
+        var options = {
+          title: 'Longest',
+          titleTextStyle: {fontSize: '18', fontName: 'Lato', bold: 'false'},
+          vAxis: {title: 'Average (minutes)'},
+          legend: {position: 'none'},
+          series: [{color: "{{colors[0]}}"}]                  
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('longest_maps'));
+        chart.draw(data, options);
+      }
+    </script>
+
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable(
+            {{ shortest_maps_data }}
+        );
+
+        var options = {
+          title: 'Shortest',
+          titleTextStyle: {fontSize: '18', fontName: 'Lato', bold: 'false'},
+          vAxis: {title: 'Average (minutes)'},
+          legend: {position: 'none'},
+          series: [{color: "{{colors[1]}}"}]
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('shortest_maps'));
+        chart.draw(data, options);
+      }
+    </script>
+    <!--
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable(
+            {{ std_dev_maps_data }}
+        );
+
+        var options = {
+          title: 'Biggest Variation',
+          vAxis: {title: 'Standard Devation (minutes)'},
+          legend: {position: 'none'},
+          series: [{color: "{{colors[2]}}"}] 
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('std_dev_maps'));
+        chart.draw(data, options);
+      }
+    </script>
+   -->
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable(
+            {{ deadliest_maps_data }}
+        );
+
+        var options = {
+          title: 'Deadliest',
+          titleTextStyle: {fontSize: '18', fontName: 'Lato', bold: 'false'},
+          vAxis: {title: 'Average Kills per Player per Minute'},
+          legend: {position: 'none'},
+          series: [{color: "{{colors[2]}}"}] 
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('deadliest_maps'));
+        chart.draw(data, options);
+      }
+    </script>
+
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable(
+            {{ peaceful_maps_data }}
+        );
+
+        var options = {
+          title: 'Most Peaceful',
+          titleTextStyle: {fontSize: '18', fontName: 'Lato', bold: 'false'},
+          vAxis: {title: 'Average Kills per Player per Minute'},
+          legend: {position: 'none'},
+          series: [{color: "{{colors[3]}}"}] 
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('peaceful_maps'));
+        chart.draw(data, options);
+      }
+    </script>
+
+    <div class="container">
+        <br>
+        <div class="row">
+        <h2>Overcast Network Map Statistics</h2>
+        <h3>Match Length</h3>
+          <div class="col-md-6">
+            <div id="longest_maps" style="width: 100%; height: 300px;"></div>
+          </div>
+          <div class="col-md-6">
+            <div id="shortest_maps" style="width: 100%; height: 300px;"></div>
+          </div>
+       <!--   <div class="col-md-6 col-md-offset-3">
+            <div id="std_dev_maps" style="width: 100%; height: 300px;"></div>
+          </div> -->
+        </div> <!-- /.row -->
+        <div class="row">
+        <h3>Combat</h3>
+          <div class="col-md-6">
+            <div id="deadliest_maps" style="width: 100%; height: 300px;"></div>
+          </div>
+          <div class="col-md-6">
+            <div id="peaceful_maps" style="width: 100%; height: 300px;"></div>
+          </div>
+        </div> <!-- /.row -->
+
+
+	{% include 'footer.html' %}
+
+  </body>
+</html>

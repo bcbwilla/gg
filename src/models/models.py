@@ -32,15 +32,17 @@ class GGModelBase(object):
 
         
     @classmethod
-    def top(cls, attr, ascending, limit):
+    def top(cls, attr, ascending=True, limit=5, projections=[]):
         if hasattr(cls, attr):
+            logging.info("has attribute " + attr)
             if ascending:
-                qry = cls().query().order(getattr(cls,attr))
+                qry = cls().query(getattr(cls,attr) != None).order(getattr(cls,attr))
             else:
-                qry = cls().query().order(-getattr(cls,attr))
+                qry = cls().query(getattr(cls,attr) != None).order(-getattr(cls,attr))
             
-            objs = qry.fetch(limit, projection=[getattr(cls,attr)])
-            
+            p = projections + [getattr(cls,attr), cls.name]
+            objs = qry.fetch(limit, projection=p)
+            logging.info(objs)
             return objs
 
         else:
@@ -109,28 +111,32 @@ class Map(ndb.Model,GGModelBase):
     min_participants = ndb.IntegerProperty()
     max_participants = ndb.IntegerProperty()
 
+    kill_density = ndb.ComputedProperty(lambda self: (self.avg_kills / self.avg_participants) / self.avg_length 
+                                        if self.avg_kills != None and self.avg_length != None and self.avg_participants != None else None)
+
     def get_map_xml_data(self, url=None):
         """ Get more map information from map XML page 
             
-            Positional Arguments:
-            mapp -- Map object 
+            Keyword Arguments:
+            url -- specifies complete url to map xml page.
         
         """
 
         m = self
 
-        BASE_URL = "https://maps.oc.tc/"
-        URL_SUFFIX = "/map.xml"
+        if not url:
+            BASE_URL = "https://maps.oc.tc/"
+            URL_SUFFIX = "/map.xml"
 
-        page_get = True
-        
-        m_name = m.name.replace(" ", "%20") # replace spaces in URL with %20
+            page_get = True
+            
+            m_name = m.name.replace(" ", "%20") # replace spaces in URL with %20
 
-        # check if Ghost Squadron map
-        if m.name[:3].lower() == "gs:":
-            url = BASE_URL + "GS/" + m.name[4:] + URL_SUFFIX
-        else:
-            url = BASE_URL + m_name + URL_SUFFIX   
+            # check if Ghost Squadron map
+            if m.name[:3].lower() == "gs:":
+                url = BASE_URL + "GS/" + m.name[4:] + URL_SUFFIX
+            else:
+                url = BASE_URL + m_name + URL_SUFFIX   
 
 
         try:
@@ -158,9 +164,10 @@ class Map(ndb.Model,GGModelBase):
         try:
             m.objective = soup.find("objective").contents[0]
 
+            m.authors = []
             authors = []
             for author in soup.find_all("author"):
-                if not author in m.authors:
+                if not author.contents[0] in m.authors:
                     m.authors.append(author.contents[0])
 
             m.team_size = int(soup.find_all("team")[0]['max'])

@@ -6,6 +6,7 @@ import os
 import json
 import cgi
 import logging
+import random
 
 from google.appengine.datastore.datastore_query import Cursor
 
@@ -50,7 +51,46 @@ class MainPage(Handler):
     """
     
     def get(self):
-        self.redirect('/maps')
+        #self.redirect('/maps')
+
+        # prepare data for display
+        # longest and shortest maps
+        longest_maps = Map.top("avg_length", ascending=False, limit=10)
+        shortest_maps = Map.top("avg_length", ascending=True, limit=10)
+        longest_maps_data = [[str(m.name), round(m.avg_length / 60.0, 2)] for m in longest_maps]      
+        shortest_maps_data = [[str(m.name), round(m.avg_length / 60.0, 2)] for m in shortest_maps]  
+
+        longest_maps_data = [['Map', 'Average Length']] + longest_maps_data
+        shortest_maps_data = [['Map', 'Average Length']] + shortest_maps_data
+
+
+        # most deadly maps
+        deadliest_maps = Map.top("kill_density", ascending=False, limit=10)
+        deadliest_maps_data = [[str(m.name), round(m.kill_density*60, 2)] for m in deadliest_maps]
+        deadliest_maps_data = [['Map', 'Average Kills/Minute']] + deadliest_maps_data  
+
+        peaceful_maps = Map.top("kill_density", ascending=True, limit=10)
+        peaceful_maps_data = [[str(m.name), round(m.kill_density*60, 2)] for m in peaceful_maps]
+        peaceful_maps_data = [['Map', 'Average Kills/Minute']] + peaceful_maps_data
+
+
+
+
+        # biggest variation
+        #std_dev_maps = Map.top("std_length", ascending=False, limit=10)
+        #std_dev_maps_data = [[str(m.name), round(m.std_length / 60.0, 2)] for m in std_dev_maps]
+        #std_dev_maps_data = [['Map', 'Standard Deviation of Length (minutes)']] + std_dev_maps_data  
+
+        
+        # colors for graphs
+        # css colors = success: "18bc9c", primary: "2c3e50", warning: f39c12", info: "3498DB", danger: "e74c3c"
+        colors = ['#18bc9c', '#f39c12', '#3498db', '#e74c3c']
+        random.shuffle(colors)
+
+
+        self.render("main.html", page_title="Stats", longest_maps_data=longest_maps_data,
+                    shortest_maps_data=shortest_maps_data, deadliest_maps_data=deadliest_maps_data,
+                    peaceful_maps_data=peaceful_maps_data, colors=colors)        
 
 
 class MapPage(Handler):
