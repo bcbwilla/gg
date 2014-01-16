@@ -57,7 +57,7 @@ class Map(ndb.Model,GGModelBase):
     servers = ndb.StringProperty(repeated=True)
     updated_date = ndb.DateTimeProperty(auto_now=True)
     n_matches = ndb.IntegerProperty()
-    gamemode = ndb.StringProperty(choices=["CTW","DTC","DTM","Blitz","Ghost Squadron","TDM","Mixed","Gear","KOTH"])
+    gamemode = ndb.StringProperty(choices=["CTW","DTC","DTM","Blitz","Rage","GS","TDM","Mixed","Gear","KOTH"])
     authors = ndb.StringProperty(repeated=True)
     objective = ndb.StringProperty()
     team_size = ndb.IntegerProperty()
