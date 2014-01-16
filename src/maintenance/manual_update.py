@@ -10,11 +10,91 @@ class ManualUpdateHandler(webapp2.RequestHandler):
 
         # put entites to update manually here.
         
+        maps = ["Ozone", "BlockBlock", "Viridun", "The Arena", "Babylon", "Battle of Lyndanisse", 
+                "Hallowed Harb", "Twilight Zone", "Wooly Woods", "Venice TDM", "Glacial Impact",
+                "Scrap Mettle"]
+        for m in maps:
+            self.update_entity(Map, m, gamemode="TDM")
 
-        #self.update_entity(Map, "Cairo Blitz", objective="Eliminate the other team before 10 minutes is up", authors=["koipen"])
+
+
+        maps = [
+               "AstroGEN",
+               "The Arena Blitz",
+               "Battle of Lyndanisse Blitz",
+               "Bliss",
+               "Blitzkrieg",
+               "Cairo Blitz",
+               "CatalystMC Blitz",
+               "The Complex",
+               "CotBot",
+               "Harb Blitz",
+               "Industrial Citadel",
+               "Metallicus",
+               "No Return",
+               "Overgrown Blitz",
+               "Ozone Blitz",
+               "Permeac",
+               "Proelium",
+               "Twilight Zone: Blitz",
+               "Venice Blitz",
+               "Viridun Blitz",
+               "Cake Wars 3",
+               "Dead Heat",
+               "Undead Heat",
+               "War Wars"]
+
+        for m in maps:
+            self.update_entity(Map, m, gamemode="Blitz")
+
+        maps = [
+                "Arcane Realms",
+                "Grand Hall",
+                "Parallax",
+                "Banana Split",
+                "Blocks CTW",
+                "Broken Unity",
+                "Buried Down",
+                "Cargo",
+                "Circus CTW",
+                "Cloud Nine",
+                "Deepwind Jungle",
+                "Dynamo",
+                "Empire",
+                "Fairy Tales 2: A Tale or Two",
+                "Golden Drought",
+                "Golden Drought II",
+                "Golden Drought III",
+                "Hadron",
+                "Haunted Rings",
+                "Hydrolock",
+                "Hydrolock II",
+                "Jungle Beat",
+                "Kytriak (TE)",
+                "Mushroom Gorge",
+                "Placid Spring",
+                "Race For Victory",
+                "Race For Victory 2",
+                "Race For Victory 3",
+                "Race Through the Forest",
+                "Ring Race",
+                "Selenius",
+                "Tenebrous",
+                "Turf Wars",
+                "Twisted",
+                "Two Castles",
+                "Two Tier",
+                "Utopia",
+                "Welcome To Wool Square"]
+
+        for m in maps:
+            self.update_entity(Map, m, gamemode="CTW")
+
+
 
         #
 
+        """
         maps = [
                 ("BipBetaMC" ,"https://maps.oc.tc/BipBetaMC%20TDM/map.xml"),
                 ("Cake Wars 3", "https://maps.oc.tc/Blitz/Cake%20Wars%203/map.xml"),
@@ -65,28 +145,31 @@ class ManualUpdateHandler(webapp2.RequestHandler):
 
         for m in maps:
             self.update_map_xml_directly(m[0],m[1])
+        """
+
+        
 
         logging.info("Manual update complete")
-        logging.info("Updating mapmakers")
-        self.update_mapmakers()
-        logging.info("Mapmakers updated")
+        #logging.info("Updating mapmakers")
+        #self.update_mapmakers()
+        #logging.info("Mapmakers updated")
         self.redirect("/")
 
 
-#    def update_entity(self, cls, name, **kwargs):
-#        """ Updates all attributes in kwargs for entity
-#            named 'name' of type 'cls'.
-#        """
-#
-#        entity = cls.query(cls.name == name).get()
-#        logging.info('Updating ' + name)
-#        
-#        if entity:
-#            for attr, value in kwargs.iteritems():
-#                if hasattr(entity, attr):
-#                    setattr(entity, attr, value)
-#
-#            entity.put()
+    def update_entity(self, cls, name, **kwargs):
+        """ Updates all attributes in kwargs for entity
+            named 'name' of type 'cls'.
+        """
+
+        entity = cls.query(cls.name == name).get()
+        logging.info('Updating ' + name)
+        
+        if entity:
+            for attr, value in kwargs.iteritems():
+                if hasattr(entity, attr):
+                    setattr(entity, attr, value)
+
+            entity.put()
     
 
     def update_map_xml_directly(self, name, url):

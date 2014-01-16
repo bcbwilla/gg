@@ -15,3 +15,7 @@ cron:
   url: /crons/updatemapmakers
   schedule: every day 03:20
   target: updatemaps
+- description: Update charts
+  url: /crons/updatecharts
+  schedule: every day 03:30
+  target: updatemaps

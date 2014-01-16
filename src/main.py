@@ -21,6 +21,7 @@ app = webapp2.WSGIApplication([('/', pages.MainPage),
                                ('/crons/updateocn', crons.UpdateOCNStatsHandler),
                                ('/crons/updategm', crons.UpdateGameModeHandler),
                                ('/crons/updatemapmakers', crons.UpdateMapMakersHandler),
+                               ('/crons/updatecharts', crons.UpdateChartsHandler),
                                ('/manual_update',  manual_update.ManualUpdateHandler)
                                ], debug=True)
 

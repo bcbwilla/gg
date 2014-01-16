@@ -9,14 +9,14 @@ from bs4 import BeautifulSoup
 from google.appengine.api import urlfetch, urlfetch_errors
 
 import scraper
-from models.models import Match, Map, Server, OCN, MapMaker
+from models.models import Match, Map, Server, OCN, MapMaker, ColumnChart
 
 class GetMatchesHandler(webapp2.RequestHandler):
     """ Gets matches from oc.tc/matches and store in ndb """
 
     def get(self):
         logging.info("Getting matches")
-        scraper.scrape_matches(10)
+        scraper.scrape_matches(20)
         logging.info("Matches gotten")
 
 
@@ -224,7 +224,7 @@ class UpdateMapMakersHandler(webapp2.RequestHandler):
             participants = np.array(participants)
 
 
-            if len(lengths) > 1:
+            if len(lengths) >= 1:
                 mm.avg_length = np.mean(lengths)
                 mm.med_length = np.median(lengths)
                 mm.std_length = np.std(lengths)
@@ -259,3 +259,54 @@ class UpdateGameModeHandler(webapp2.RequestHandler):
         # TODO
         pass
             
+
+class UpdateChartsHandler(webapp2.RequestHandler):
+    """ Updates map stats from matches """
+
+    def get(self):
+        logging.info('Updating charts.')
+
+        # time based stats
+        longest_chart = ColumnChart().get_or_insert("longest_avg_length")       
+        longest_maps = Map.top("avg_length", ascending=False, limit=30, projections=["gamemode"])
+        
+        longest_chart.name = "Longest"
+        longest_chart.x = [str(m.name) for m in longest_maps if m.gamemode != "TDM"][:10]
+        longest_chart.y = [round(m.avg_length / 60.0, 3) for m in longest_maps if m.gamemode != "TDM"][:10]
+        longest_chart.put()
+
+
+        shortest_chart = ColumnChart().get_or_insert("shortest_avg_length")       
+        shortest_maps = Map.top("avg_length", ascending=True, limit=10)
+        
+        shortest_chart.name = "Shortest"
+        shortest_chart.x = [str(m.name) for m in shortest_maps]
+        shortest_chart.y = [round(m.avg_length, 3) for m in shortest_maps]
+        shortest_chart.put()
+        
+
+        # most deadly maps
+        deadliest_chart = ColumnChart().get_or_insert("deadliest")             
+        deadliest_maps = Map.top("kill_density", ascending=False, limit=10)
+
+        deadliest_chart.name = "Deadliest"
+        deadliest_chart.x = [str(m.name) for m in deadliest_maps]
+        deadliest_chart.y = [round(m.kill_density*60, 3) for m in deadliest_maps]
+        deadliest_chart.x_header = "Map"
+        deadliest_chart.y_header = "Kills per Player per Minute"
+        deadliest_chart.put()
+
+        peaceful_chart = ColumnChart().get_or_insert("peaceful") 
+        peaceful_maps = Map.top("kill_density", ascending=True, limit=10)
+
+        peaceful_chart.name = "Most Peaceful"
+        peaceful_chart.x = [str(m.name) for m in peaceful_maps]
+        peaceful_chart.y = [round(m.kill_density*60, 3) for m in peaceful_maps]
+        peaceful_chart.x_header = "Map"
+        peaceful_chart.y_header = "Kills per Player per Minute"
+        peaceful_chart.put()
+
+        logging.info("Charts updated")
+        
+
+        

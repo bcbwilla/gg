@@ -12,11 +12,11 @@
       google.setOnLoadCallback(drawChart);
       function drawChart() {
         var data = google.visualization.arrayToDataTable(
-            {{ longest_maps_data }}
+            {{ longest.get_data_array() }}
         );
 
         var options = {
-          title: 'Longest',
+          title: '{{longest.name}}',
           titleTextStyle: {fontSize: '18', fontName: 'Lato', bold: 'false'},
           vAxis: {title: 'Average (minutes)'},
           legend: {position: 'none'},
@@ -33,13 +33,13 @@
       google.setOnLoadCallback(drawChart);
       function drawChart() {
         var data = google.visualization.arrayToDataTable(
-            {{ shortest_maps_data }}
+            {{ shortest.get_data_array() }}
         );
 
         var options = {
-          title: 'Shortest',
+          title: '{{shortest.name}}',
           titleTextStyle: {fontSize: '18', fontName: 'Lato', bold: 'false'},
-          vAxis: {title: 'Average (minutes)'},
+          vAxis: {title: 'Average (seconds)'},
           legend: {position: 'none'},
           series: [{color: "{{colors[1]}}"}]
         };
@@ -74,11 +74,11 @@
       google.setOnLoadCallback(drawChart);
       function drawChart() {
         var data = google.visualization.arrayToDataTable(
-            {{ deadliest_maps_data }}
+            {{ deadliest.get_data_array() }}
         );
 
         var options = {
-          title: 'Deadliest',
+          title: '{{deadliest.name}}',
           titleTextStyle: {fontSize: '18', fontName: 'Lato', bold: 'false'},
           vAxis: {title: 'Average Kills per Player per Minute'},
           legend: {position: 'none'},
@@ -95,11 +95,11 @@
       google.setOnLoadCallback(drawChart);
       function drawChart() {
         var data = google.visualization.arrayToDataTable(
-            {{ peaceful_maps_data }}
+            {{ peaceful.get_data_array() }}
         );
 
         var options = {
-          title: 'Most Peaceful',
+          title: '{{peaceful.name}}',
           titleTextStyle: {fontSize: '18', fontName: 'Lato', bold: 'false'},
           vAxis: {title: 'Average Kills per Player per Minute'},
           legend: {position: 'none'},

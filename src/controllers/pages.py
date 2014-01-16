@@ -10,7 +10,7 @@ import random
 
 from google.appengine.datastore.datastore_query import Cursor
 
-from models.models import Map, Server, MapMaker
+from models.models import Map, Server, MapMaker, ColumnChart
 
 # Set environment to use jinja2
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -47,39 +47,15 @@ class Handler(webapp2.RequestHandler):
 
 class MainPage(Handler):
     """ Main page.
-        Just redirects to /maps for now.
+        Displays some map charts
     """
     
     def get(self):
-        #self.redirect('/maps')
-
-        # prepare data for display
-        # longest and shortest maps
-        longest_maps = Map.top("avg_length", ascending=False, limit=10)
-        shortest_maps = Map.top("avg_length", ascending=True, limit=10)
-        longest_maps_data = [[str(m.name), round(m.avg_length / 60.0, 2)] for m in longest_maps]      
-        shortest_maps_data = [[str(m.name), round(m.avg_length / 60.0, 2)] for m in shortest_maps]  
-
-        longest_maps_data = [['Map', 'Average Length']] + longest_maps_data
-        shortest_maps_data = [['Map', 'Average Length']] + shortest_maps_data
-
-
-        # most deadly maps
-        deadliest_maps = Map.top("kill_density", ascending=False, limit=10)
-        deadliest_maps_data = [[str(m.name), round(m.kill_density*60, 2)] for m in deadliest_maps]
-        deadliest_maps_data = [['Map', 'Average Kills/Minute']] + deadliest_maps_data  
-
-        peaceful_maps = Map.top("kill_density", ascending=True, limit=10)
-        peaceful_maps_data = [[str(m.name), round(m.kill_density*60, 2)] for m in peaceful_maps]
-        peaceful_maps_data = [['Map', 'Average Kills/Minute']] + peaceful_maps_data
-
-
-
-
-        # biggest variation
-        #std_dev_maps = Map.top("std_length", ascending=False, limit=10)
-        #std_dev_maps_data = [[str(m.name), round(m.std_length / 60.0, 2)] for m in std_dev_maps]
-        #std_dev_maps_data = [['Map', 'Standard Deviation of Length (minutes)']] + std_dev_maps_data  
+   
+        longest = ColumnChart().get_by_id("longest_avg_length")
+        shortest = ColumnChart().get_by_id("shortest_avg_length")
+        deadliest = ColumnChart().get_by_id("deadliest")
+        peaceful = ColumnChart().get_by_id("peaceful")
 
         
         # colors for graphs
@@ -88,9 +64,9 @@ class MainPage(Handler):
         random.shuffle(colors)
 
 
-        self.render("main.html", page_title="Stats", longest_maps_data=longest_maps_data,
-                    shortest_maps_data=shortest_maps_data, deadliest_maps_data=deadliest_maps_data,
-                    peaceful_maps_data=peaceful_maps_data, colors=colors)        
+        self.render("main.html", page_title="Stats", longest=longest,
+                    shortest=shortest, deadliest=deadliest,
+                    peaceful=peaceful, colors=colors)        
 
 
 class MapPage(Handler):
@@ -209,7 +185,7 @@ def get_data_for_table(ModelObject, sort, page):
         template_values.
     """
 
-    PER_PAGE = 15 # number of table entries per page
+    PER_PAGE = 20 # number of table entries per page
 
     if not page or page < 1:
         page = 1
@@ -218,10 +194,9 @@ def get_data_for_table(ModelObject, sort, page):
 
     if sort and sort != 'name':
         try:
-            qry = ModelObject.query().order(-getattr(ModelObject, sort))
+            qry = ModelObject.query(getattr(ModelObject, sort) != None).order(-getattr(ModelObject, sort))
         except AttributeError:
             qry = ModelObject.query().order(ModelObject.name)
-
     else:
         sort = 'name'
         qry = ModelObject.query().order(ModelObject.name)

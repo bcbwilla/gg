@@ -413,3 +413,22 @@ class MapMaker(ndb.Model,GGModelBase):
     med_participants = ndb.FloatProperty()
     std_participants = ndb.FloatProperty()
     
+
+class Chart(ndb.Model):
+    """ Represents a basic chart """
+
+    name = ndb.StringProperty()
+
+class ColumnChart(Chart):
+    """ Represents a colum chart """
+    
+    x = ndb.StringProperty(repeated=True)
+    y = ndb.FloatProperty(repeated=True)
+    x_header = ndb.StringProperty(default='Map')
+    y_header = ndb.StringProperty(default='')
+
+    def get_data_array(self):
+        """ prepares data for use in google chart 
+            returns 2d array of [x,y] with headers"""
+        x_strings = [str(i) for i in self.x]
+        return [[str(self.x_header), str(self.y_header)]] + [list(i) for i in zip(x_strings, self.y)]
