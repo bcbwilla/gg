@@ -36,6 +36,32 @@ indexes:
 
 - kind: Map
   properties:
+  - name: gamemode
+  - name: avg_length
+  - name: name
+
+- kind: Map
+  properties:
+  - name: gamemode
+  - name: avg_length
+    direction: desc
+  - name: name
+
+- kind: Map
+  properties:
+  - name: gamemode
+  - name: kill_density
+  - name: name
+
+- kind: Map
+  properties:
+  - name: gamemode
+  - name: kill_density
+    direction: desc
+  - name: name
+
+- kind: Map
+  properties:
   - name: kill_density
   - name: name
 

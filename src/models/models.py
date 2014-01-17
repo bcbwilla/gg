@@ -32,13 +32,19 @@ class GGModelBase(object):
 
         
     @classmethod
-    def top(cls, attr, ascending=True, limit=5, projections=[]):
+    def top(cls, attr, ascending=True, limit=5, projections=[], gm='All'):
         if hasattr(cls, attr):
             logging.info("has attribute " + attr)
-            if ascending:
-                qry = cls().query(getattr(cls,attr) != None).order(getattr(cls,attr))
+            if gm != 'All':
+                if ascending:
+                    qry = cls().query(getattr(cls,attr) != None, cls.gamemode == gm).order(getattr(cls,attr))
+                else:
+                    qry = cls().query(getattr(cls,attr) != None, cls.gamemode == gm).order(-getattr(cls,attr))
             else:
-                qry = cls().query(getattr(cls,attr) != None).order(-getattr(cls,attr))
+                if ascending:
+                    qry = cls().query(getattr(cls,attr) != None).order(getattr(cls,attr))
+                else:
+                    qry = cls().query(getattr(cls,attr) != None).order(-getattr(cls,attr))              
             
             p = projections + [getattr(cls,attr), cls.name]
             objs = qry.fetch(limit, projection=p)
@@ -430,5 +436,8 @@ class ColumnChart(Chart):
     def get_data_array(self):
         """ prepares data for use in google chart 
             returns 2d array of [x,y] with headers"""
-        x_strings = [str(i) for i in self.x]
-        return [[str(self.x_header), str(self.y_header)]] + [list(i) for i in zip(x_strings, self.y)]
+        if self.x:
+            x_strings = [str(i) for i in self.x]
+            return [[str(self.x_header), str(self.y_header)]] + [list(i) for i in zip(x_strings, self.y)]
+        else:
+            return None

@@ -266,18 +266,27 @@ class UpdateChartsHandler(webapp2.RequestHandler):
     def get(self):
         logging.info('Updating charts.')
 
+        gms = ["All", "DTC", "CTW", "DTM", "TDM", "Blitz", "Rage", "GS", "Gear", "KOTH", "Mixed"]
+
+        for gm in gms:
+            self.make_charts(gm)
+
+        logging.info("Charts updated")
+        
+    def make_charts(self, gm):
+
         # time based stats
-        longest_chart = ColumnChart().get_or_insert("longest_avg_length")       
-        longest_maps = Map.top("avg_length", ascending=False, limit=30, projections=["gamemode"])
+        longest_chart = ColumnChart().get_or_insert("longest_avg_length" + gm)       
+        longest_maps = Map.top("avg_length", gm=gm, ascending=False, limit=10)
         
         longest_chart.name = "Longest"
-        longest_chart.x = [str(m.name) for m in longest_maps if m.gamemode != "TDM"][:10]
-        longest_chart.y = [round(m.avg_length / 60.0, 3) for m in longest_maps if m.gamemode != "TDM"][:10]
+        longest_chart.x = [str(m.name) for m in longest_maps]
+        longest_chart.y = [round(m.avg_length / 60.0, 3) for m in longest_maps]
         longest_chart.put()
 
 
-        shortest_chart = ColumnChart().get_or_insert("shortest_avg_length")       
-        shortest_maps = Map.top("avg_length", ascending=True, limit=10)
+        shortest_chart = ColumnChart().get_or_insert("shortest_avg_length" + gm)       
+        shortest_maps = Map.top("avg_length", gm=gm, ascending=True, limit=10)
         
         shortest_chart.name = "Shortest"
         shortest_chart.x = [str(m.name) for m in shortest_maps]
@@ -286,8 +295,8 @@ class UpdateChartsHandler(webapp2.RequestHandler):
         
 
         # most deadly maps
-        deadliest_chart = ColumnChart().get_or_insert("deadliest")             
-        deadliest_maps = Map.top("kill_density", ascending=False, limit=10)
+        deadliest_chart = ColumnChart().get_or_insert("deadliest" + gm)             
+        deadliest_maps = Map.top("kill_density", gm=gm, ascending=False, limit=10)
 
         deadliest_chart.name = "Deadliest"
         deadliest_chart.x = [str(m.name) for m in deadliest_maps]
@@ -296,8 +305,8 @@ class UpdateChartsHandler(webapp2.RequestHandler):
         deadliest_chart.y_header = "Kills per Player per Minute"
         deadliest_chart.put()
 
-        peaceful_chart = ColumnChart().get_or_insert("peaceful") 
-        peaceful_maps = Map.top("kill_density", ascending=True, limit=10)
+        peaceful_chart = ColumnChart().get_or_insert("peaceful" + gm) 
+        peaceful_maps = Map.top("kill_density", gm=gm, ascending=True, limit=10)
 
         peaceful_chart.name = "Most Peaceful"
         peaceful_chart.x = [str(m.name) for m in peaceful_maps]
@@ -305,8 +314,3 @@ class UpdateChartsHandler(webapp2.RequestHandler):
         peaceful_chart.x_header = "Map"
         peaceful_chart.y_header = "Kills per Player per Minute"
         peaceful_chart.put()
-
-        logging.info("Charts updated")
-        
-
-        

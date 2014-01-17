@@ -51,11 +51,15 @@ class MainPage(Handler):
     """
     
     def get(self):
-   
-        longest = ColumnChart().get_by_id("longest_avg_length")
-        shortest = ColumnChart().get_by_id("shortest_avg_length")
-        deadliest = ColumnChart().get_by_id("deadliest")
-        peaceful = ColumnChart().get_by_id("peaceful")
+        gm = self.request.get('gm')
+
+        if not gm:
+            gm = "All"
+
+        longest = ColumnChart().get_by_id("longest_avg_length" + gm)
+        shortest = ColumnChart().get_by_id("shortest_avg_length" + gm)
+        deadliest = ColumnChart().get_by_id("deadliest" + gm)
+        peaceful = ColumnChart().get_by_id("peaceful" + gm)
 
         
         # colors for graphs
@@ -63,10 +67,14 @@ class MainPage(Handler):
         colors = ['#18bc9c', '#f39c12', '#3498db', '#e74c3c']
         random.shuffle(colors)
 
+        if (longest.get_data_array() and shortest.get_data_array() and 
+            deadliest.get_data_array() and peaceful.get_data_array()):
 
-        self.render("main.html", page_title="Stats", longest=longest,
-                    shortest=shortest, deadliest=deadliest,
-                    peaceful=peaceful, colors=colors)        
+            self.render("main.html", gm=gm, page_title="Stats", longest=longest,
+                        shortest=shortest, deadliest=deadliest,
+                        peaceful=peaceful, colors=colors)        
+        else:
+            self.redirect('/')
 
 
 class MapPage(Handler):
