@@ -12,7 +12,6 @@
               <thead>
                 <tr>
                   <th><a href="/maps?sort=name">Map</a></th>
-      <!--            <th><abbr title="Support coming soon!">Game Mode<abbr></th> -->
                   <th><a href="/maps?sort=avg_kills">Avg. Kills</a></th>
                   <th><a href="/maps?sort=avg_deaths">Avg. Deaths</a></th>
                   <th><a href="/maps?sort=avg_length">Avg. Length</a></th>
@@ -24,7 +23,6 @@
                 <tr>
                   {% if m.name != None %}
                   <td><a href="/map/{{m.name}}">{{ m.name }}</a></td>
-       <!--           <td> </td> -->
                   {% if m.avg_kills != None %}
                   <td>{{ m.avg_kills | round(2) }}</td>
                   <td>{{ m.avg_deaths | round(2) }}</td>

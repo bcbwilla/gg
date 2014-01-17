@@ -7,12 +7,14 @@
         <br><br><br>
     
         <div class="row">
-          <div class="col-md-4 col-md-offset-4">
+          <div class="col-md-6 col-md-offset-3">
     
             <table class="table table-condensed table-hover table-bordered">
               <thead>
                 <tr>
                   <th><a href="/servers?sort=name">Server</a></th>
+                  <th><a href="/maps?sort=avg_kills">Avg. Kills</a></th>
+                  <th><a href="/maps?sort=avg_deaths">Avg. Deaths</a></th>
                   <th><a href="/servers?sort=avg_rotation_length">Avg. Rotation Length</a></th>
                   <th><a href="/servers?sort=n_maps">Maps</a></th>
                 </tr>
@@ -21,6 +23,13 @@
                 {% for s in servers %}
                 <tr>
                   <td><a href="/server/{{s.name}}">{{ s.name }}</a></td>
+                  {% if s.avg_kills != None %}
+                  <td>{{ s.avg_kills | round(2) }}</td>
+                  <td>{{ s.avg_deaths | round(2) }}</td>
+                  {% else %}
+                  <td></td>
+                  <td></td>
+                  {% endif %}
                   {% if s.avg_rotation_length_s != "0:00:00" %}
                   <td>{{ s.avg_rotation_length_s }}</td>
                   {% else %}

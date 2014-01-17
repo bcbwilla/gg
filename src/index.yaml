@@ -73,6 +73,21 @@ indexes:
 
 - kind: Map
   properties:
+  - name: name
+  - name: avg_deaths
+  - name: avg_kills
+  - name: avg_length
+
+- kind: Map
+  properties:
+  - name: name
+  - name: avg_deaths
+  - name: avg_kills
+  - name: avg_length
+  - name: n_matches
+
+- kind: Map
+  properties:
   - name: std_length
     direction: desc
   - name: name
@@ -82,3 +97,11 @@ indexes:
   - name: map_name
   - name: date
     direction: desc
+
+- kind: Server
+  properties:
+  - name: name
+  - name: avg_deaths
+  - name: avg_kills
+  - name: avg_length
+  - name: n_maps
