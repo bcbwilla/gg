@@ -67,15 +67,17 @@ class MainPage(Handler):
         colors = ['#18bc9c', '#f39c12', '#3498db', '#e74c3c']
         random.shuffle(colors)
 
-        if (longest.get_data_array() and shortest.get_data_array() and 
-            deadliest.get_data_array() and peaceful.get_data_array()):
+        if ((longest and shortest and deadliest and peaceful) and 
+            (longest.get_data_array() and shortest.get_data_array() and 
+            deadliest.get_data_array() and peaceful.get_data_array())):
 
             self.render("main.html", gm=gm, page_title="Stats", longest=longest,
                         shortest=shortest, deadliest=deadliest,
                         peaceful=peaceful, colors=colors)        
         else:
-            self.redirect('/')
-
+			self.render("main.html", gm=gm, page_title="Stats", longest=None,
+		                        shortest=None, deadliest=None,
+		                        peaceful=None, colors=colors)    
 
 class MapPage(Handler):
     """ Map page."""

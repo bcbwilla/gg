@@ -8,6 +8,7 @@ Please submit bug reports or feature suggestions on the [issues page](https://gi
 
 ###Fixing Issues
 To work on GG locally:
+
 1. Install Google App Engine's [development environment](https://developers.google.com/appengine/docs/python/gettingstartedpython27/devenvironment).
 2. Download GG.
 3. Download [Beautiful Soup 4](http://www.crummy.com/software/BeautifulSoup/) and drop the folder *bs4* into `GG/src`.
